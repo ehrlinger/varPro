@@ -34,56 +34,41 @@ importFrom("umap", "umap")
 
 
 export(
-       beta.varpro,
-       clusterpro,
-       clusterpro.varpro,
-       cv.matrix.performance,
-       cv.matrix,
-       cv.varpro,
-       cv.unsupv,
-       cv.unsupv.varpro,
-       get.vimp,
-       get.orgvimp,
-       get.topvars,
-       get.iso.performance,
-       importance,
-       importance.varpro,
-       ivarpro,
-       isopro,
-       isopro.varpro,
-       predict.isopro,
-       predict.isopro.varpro,
-       predict.unsupv,
-       predict.unsupv.varpro,
-       predict.varpro,
-       partialpro,
-       partialpro.varpro,
-
-       plot.clusterpro,
-       plot.clusterpro.varpro,
-
-       plot.partialpro,
-       plot.partialpro.varpro,
-       gbm.learner,
-       rf.learner,
-       bart.learner,
-       unsupv.varpro,
-       unsupv,
-       varpro,
-       varpro.news,
-       varpro.strength)
+  bart.learner,
+  beta.varpro,
+  clusterpro,
+  cv.varpro,
+  get.beta.entropy,
+  get.iso.performance,
+  get.orgvimp,
+  get.topvars,
+  get.vimp,
+  gbm.learner,
+  importance,
+  importance.varpro,
+  ivarpro,
+  isopro,
+  make.vt,
+  predict.isopro,
+  predict.uvarpro,
+  predict.varpro,
+  partialpro,
+  plot.clusterpro,
+  plot.partialpro,
+  rf.learner,
+  sdependent,
+  uvarpro,
+  varpro,
+  varpro.news,
+  varpro.strength)
 
 S3method(plot, clusterpro)
-S3method(plot, clusterpro.varpro)
 
 S3method(plot, partialpro)
-S3method(plot, partialpro.varpro)
 
 
 S3method(predict, isopro)
-S3method(predict, isopro.varpro)
-S3method(predict, unsupv)
-S3method(predict, unsupv.varpro)
+S3method(predict, uvarpro)
 S3method(predict, varpro)
 
 S3method(print, cv.varpro)
