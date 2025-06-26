@@ -1,4 +1,4 @@
-url: http://ehrlinger.github.io/varPro/
+url: http://ehrlinger.github.io/varpro/
 template:
   bootstrap: 5
   bslib:
@@ -35,5 +35,3 @@ footer:
   components:
     developed_by: "John Ehrlinger"
     built_with_pkgdown: "This site was built using [pkgdown](https://pkgdown.r-lib.org/)!&nbsp;&nbsp;<img src='https://pkgdown.r-lib.org/logo.png' alt='pkgdown logo' width='25'>"
-    
-    
