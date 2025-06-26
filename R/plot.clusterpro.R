@@ -1,3 +1,34 @@
+#' Plots for Unsupervised Data Visualization
+#' 
+#' Plots for unsupervised data visualization
+#' 
+#' 
+#' Generates a two-dimensional visualization using UMAP applied to the enhanced
+#' data corresponding to a release variable. This provides a low-dimensional
+#' representation of the clustered structure derived from the rule-based
+#' transformation of the original data.
+#' 
+#' @param x \code{clusterpro} object returned from a previous call to
+#' \code{clusterpro}.
+#' @param xvar.names Names (or integer indices) of the x-variables to plot.
+#' Defaults to all variables.
+#' @param shrink Logical. If \code{TRUE}, shrinks the release variable to zero.
+#' @param col Logical. If \code{TRUE}, colors the points in the plot.
+#' @param col.names Variable used to color the plots. Defaults to the release
+#' variable. Can also be an integer index.
+#' @param sort Logical. If \code{TRUE}, sorts plots by variable importance.
+#' @param cex Numeric value to scale point size.
+#' @param breaks Number of breaks used when mapping colors to points.
+#' @param ... Additional arguments passed to \code{plot}.
+#' @author
+#' 
+#' Hemant Ishwaran
+#' @seealso \command{\link{clusterpro}}
+#' @references
+#' 
+#' McInnes L., Healy J. and Melville J. (2018).  UMAP: Uniform Manifold
+#' Approximation and Projection for Dimension Reduction.  ArXiv e-prints.
+#' @keywords plot
 plot.clusterpro <- function(x, xvar.names=NULL, shrink=TRUE, col=TRUE,
                             col.names=NULL, sort=TRUE, cex=FALSE, breaks=10, ...) {
   o <- x

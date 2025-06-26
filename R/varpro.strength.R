@@ -1,3 +1,49 @@
+#' Obtain Strength Array and Other Values from a VarPro Object
+#' 
+#' Used to parse values from a VarPro object.
+#' 
+#' Not intended for direct end-user use; primarily designed for internal
+#' package operations.
+#' 
+#' @param object \code{rfsrc} object.
+#' @param newdata Optional test data. If provided, returns branch and
+#' complementary branch membership of the training data corresponding to the
+#' test cases.
+#' @param m.target Character string specifying the target outcome for
+#' multivariate families. If unspecified, a default is selected automatically.
+#' @param max.rules.tree Maximum number of rules extracted per tree.
+#' @param max.tree Maximum number of trees used for rule extraction.
+#' @param stat Statistic to output. Options include \code{"importance"},
+#' \code{"complement mean"}, and \code{"oob mean"}.
+#' @param membership Return out-of-bag and complementary membership indices for
+#' each rule?
+#' @param neighbor Nearest neighbor parameter, used only when \code{newdata} is
+#' specified.
+#' @param seed Seed for reproducibility.
+#' @param do.trace Enable detailed trace output.
+#' @param ... Additional arguments.
+#' @keywords varpro.strength
+#' @examples
+#' 
+#'   
+#' \donttest{
+#' ## ------------------------------------------------------------
+#' ## regression example: boston housing
+#' ## ------------------------------------------------------------
+#' 
+#' ## load the data
+#' data(BostonHousing, package = "mlbench")
+#' 
+#' o <- randomForestSRC::rfsrc(medv~., BostonHousing, ntree=100)
+#' 
+#' ## call varpro.strength
+#' varpro.strength(object = o, max.rules.tree = 10, max.tree = 15)
+#' 
+#' ## call varpro.strength with test data
+#' varpro.strength(object = o, newdata = BostonHousing[1:3,], max.rules.tree = 10, max.tree = 15)
+#' 
+#' }
+#' 
 varpro.strength <- function(object,
                             newdata,
                             m.target = NULL,
