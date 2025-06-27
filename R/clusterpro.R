@@ -35,7 +35,7 @@
 #' @keywords plot
 #' @examples
 #' 
-#' 
+#' \donttest{
 #' 
 #' ##------------------------------------------------------------------
 #' ##
@@ -139,7 +139,7 @@
 #' ogU <- clusterpro(dgU)
 #' par(mfrow=c(3,3));plot(ogU,1:9)
 #' 
-#' 
+#' }
 #' 
 clusterpro <- function(data,
                        method = c("auto", "unsupv", "rnd"),
