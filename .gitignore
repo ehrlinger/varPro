@@ -47,3 +47,6 @@ docs
 
 # debug information files
 *.dwo
+*.log
+*.status
+Makevars
