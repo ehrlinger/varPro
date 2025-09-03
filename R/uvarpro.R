@@ -240,7 +240,7 @@
 uvarpro <- function(data,
                     method = c("auto", "unsupv", "rnd"),
                     ntree = 200, nodesize = NULL,
-                    max.rules.tree = 50, max.tree = 200,
+                    max.rules.tree = 20, max.tree = 200,
                     papply = mclapply, verbose = FALSE, seed = NULL,
                     ...)
 {		   
@@ -343,9 +343,7 @@ uvarpro <- function(data,
   ##
   ##------------------------------------------------------------------
   if (method == "unsupv" && !user.provided.varpro.flag) {
-    if (is.null(dots$ytry)) {
-      dots$ytry <- min(ceiling(sqrt(ncol(data))), ncol(data) - 1)
-    }
+    dots$ytry <- set.unsupervised.ytry(nrow(data), ncol(data), dots$ytry)
     o <- do.call("rfsrc", c(list(
                    data = data,
                    ntree = ntree,
