@@ -1,4 +1,4 @@
-cv.varpro <- function(f, data, nvar = 30, ntree = 150,
+cv.varpro <- function(formula, data, nvar = 30, ntree = 150,
                       local.std = TRUE, zcut = seq(0.1, 2, length = 50), nblocks = 10,
                       split.weight = TRUE, split.weight.method = NULL, sparse = TRUE,
                       nodesize = NULL, max.rules.tree = 150, max.tree = min(150, ntree),
@@ -18,7 +18,7 @@ cv.varpro <- function(f, data, nvar = 30, ntree = 150,
   ## re-define the original data in case there are missing values
   ##
   ##--------------------------------------------------------------
-  stump <- get.stump(f, data)
+  stump <- get.stump(formula, data)
   n <- stump$n
   p <- length(stump$xvar.names)
   yvar.names <- stump$yvar.names
@@ -102,7 +102,7 @@ cv.varpro <- function(f, data, nvar = 30, ntree = 150,
   ## varpro call
   ##
   ##--------------------------------------------------------------
-  o <- do.call("varpro", c(list(f = f, data = data, nvar = nvar, ntree = ntree,
+  o <- do.call("varpro", c(list(formula = formula, data = data, nvar = nvar, ntree = ntree,
                   split.weight = split.weight, split.weight.method = split.weight.method, sparse = sparse,
                   nodesize = nodesize, max.rules.tree = max.rules.tree, max.tree = max.tree,
                   verbose = verbose, seed = seed), dots))
@@ -173,7 +173,8 @@ cv.varpro <- function(f, data, nvar = 30, ntree = 150,
     pt <- imp >= zz
     if (sum(pt) > 0) {
       if (!fast) {
-        err.zz <- get.sderr(rfsrc(f, data[trn, c(yvar.names, xvar.names[pt]), drop = FALSE],
+        err.zz <- get.sderr(rfsrc(formula,
+                                  data = data[trn, c(yvar.names, xvar.names[pt]), drop = FALSE],
                                   nodesize = nodesize,
                                   ntree = ntree,
                                   rfq = rfq,
@@ -190,7 +191,8 @@ cv.varpro <- function(f, data, nvar = 30, ntree = 150,
       }
       else {
         ## nodesize is not deployed because fast subsampling is in play
-        err.zz <- get.sderr(randomForestSRC::rfsrc.fast(f, data[trn, c(yvar.names, xvar.names[pt]), drop = FALSE],
+        err.zz <- get.sderr(randomForestSRC::rfsrc.fast(formula,
+                            data = data[trn, c(yvar.names, xvar.names[pt]), drop = FALSE],
                             ntree = ntree,
                             rfq = rfq,
                             splitrule = splitrule,

@@ -10,7 +10,7 @@ for Regression, Multivariate Regression, Classification and Survival.
 }
 
 \usage{
-varpro(f, data, nvar = 30, ntree = 500, 
+varpro(formula, data, nvar = 30, ntree = 500, 
        split.weight = TRUE, split.weight.method = NULL, sparse = TRUE,
        nodesize = NULL, max.rules.tree = 150, max.tree = min(150, ntree),
        parallel = TRUE, cores = get.mc.cores(), verbose = FALSE, seed = NULL, ...)
@@ -18,7 +18,7 @@ varpro(f, data, nvar = 30, ntree = 500,
 
 \arguments{
 
-  \item{f}{Formula specifying the model to be fit.}
+  \item{formula}{Formula specifying the model to be fit.}
 
   \item{data}{Data frame containing the training data.}
 
@@ -160,6 +160,7 @@ can be overridden via the hidden option \code{use.rfq}.
   \command{\link{alzheimers}}
   \command{\link{cv.varpro}}
   \command{\link{glioma}}
+  \command{\link{hrrecov}}
   \command{\link{importance.varpro}}
   \command{\link{partialpro}}
   \command{\link{predict.varpro}}  
@@ -302,6 +303,14 @@ if (library("caret", logical.return = TRUE)) {
   print(importance(varpro(f, d)))
 
 }
+
+## ------------------------------------------------------------
+## multiclass example: wine data 
+## ------------------------------------------------------------
+data(wine, package = "randomForestSRC")
+wine$quality <- factor(wine$quality)
+o <- varpro(quality~., wine) 
+print(importance(o))
 
 ## ------------------------------------------------------------
 ## survival example: pbc 

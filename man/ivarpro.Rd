@@ -24,7 +24,9 @@ ivarpro(object,
         use.loo = TRUE,
         use.abs = FALSE,
         path.store.membership = TRUE,
-        keep.data = TRUE)
+        save.data = TRUE,
+        save.model = TRUE,
+        scale = c("local", "global", "none"))
 }
 
 \arguments{
@@ -112,8 +114,20 @@ ivarpro(object,
   \code{partial.ivarpro()} and prevents \code{ivarpro_band()} from being
   used. Default is \code{TRUE}.}
 
-\item{keep.data}{Save the x and y data (default is \code{TRUE})?  Used
+  \item{save.data}{Save the x and y data (default is \code{TRUE})?  Used
   for downstream plots.}
+
+  \item{save.model}{Save the original object (default is \code{TRUE})?  Used
+  for \code{predict.ivarpro} to obtain gradient values of test data.}
+
+  \item{scale}{Character. Controls how the local slope is scaled when
+  forming the rule-level gradient. \code{"local"} (default) uses the
+  neighborhood-based standardization described in Lu and Ishwaran(
+  2025).  \code{"global"} uses a fixed global scale (the overall
+  standard deviation of the predictor in the training data) rather than
+  a neighborhood-specific scale. \code{"none"} returns the unscaled
+  slope in the original predictor units (or the unscaled finite
+  difference for binary 0/1 release variables).}
 
 }
 
@@ -142,6 +156,23 @@ released region, and the resulting slope is used as a local,
 gradient-based priority score. Case-specific scores are obtained by
 aggregating the relevant rule-level gradients over the rules that apply
 to each case.
+
+\strong{Scaling / standardization.}
+By default, iVarPro reports a \emph{standardized} local gradient: the local
+linear regression is fit using a standardized release coordinate so that
+\code{cut = 1} corresponds to one standard deviation of the release variable
+within the released region. This yields a dimensionless effect-size interpretation
+and helps make iVarPro values comparable across predictors with different units
+and variability (see Section~2.6 of Lu and Ishwaran, 2025).
+The argument \code{scale} controls how this scaling is applied:
+\code{"local"} uses the neighborhood-specific scale (default),
+\code{"global"} uses a fixed global scale for the predictor (overall SD in the
+training data), and \code{"none"} returns the unscaled slope in the original
+predictor units (or the unscaled finite-difference for binary 0/1 release variables).
+When using iVarPro-derived gradients for interaction screening, comparing results
+across \code{scale} settings can help distinguish structural interactions in the
+prediction surface from scale-induced modulation due to neighborhood-dependent
+standardization.
 
 \strong{Neighborhood size and \code{cut.max}.}
 For continuous release variables, the size of the local neighborhood
@@ -212,14 +243,16 @@ particular:
     neighborhoods.}
   \item{\code{cut.ladder}}{The interior values of \code{cut} (excluding the
     endpoints) used for the cut.max ladder path.}
+  \item{\code{scale}}{The scaling option used to compute rule-level gradients
+      (\code{"local"}, \code{"global"}, or \code{"none"}).}
   \item{\code{rule.imp.ladder}}{A numeric matrix of dimension \eqn{R \times L}
     storing rule-level gradients selected under each ladder truncation, where
     \eqn{R} is the number of retained rules and \eqn{L = length(cut.ladder)}.}
   \item{\code{rule.variable}}{Integer vector of length \eqn{R} giving the
     release-variable index for each retained rule.}
   \item{\code{oobMembership}}{Optional list (length \eqn{R}) giving the OOB
-    membership indices for each retained rule; included only when
-    \code{path.store.membership = TRUE}.}
+    comparison/released membership indices for each retained rule;
+    included only when \code{path.store.membership = TRUE}.}
 }
 
 Additional tuning flags and rule metadata (e.g., \code{use.loo},
@@ -244,6 +277,7 @@ diagnostics.
 
 \seealso{
   \code{\link{varpro}}
+  \code{\link{partial.ivarpro}}
 }
 
 \examples{
@@ -313,6 +347,12 @@ vp <- varpro(y ~ ., df)
 
 ## ivarpro analysis 
 imp <- ivarpro(vp)
+## ivarpro analysis using a fixed global scale (optional)
+imp.global <- ivarpro(vp, scale = "global")
+
+## ivarpro analysis returning unscaled slopes (optional)
+imp.none <- ivarpro(vp, scale = "none")
+
 
 ## partial plot of x2 
 partial.ivarpro(imp, var="x2")
@@ -335,15 +375,16 @@ partial.ivarpro(imp, var="x2", col.var="x1", size.var="y")
 data(peakVO2, package = "randomForestSRC")
 
 ## varpro/importance call
-i.pv <- ivarpro(varpro(Surv(ttodead, died)~., peakVO2))
+vp <- varpro(Surv(ttodead, died)~., peakVO2)
+ivp <- ivarpro(vp, adaptive = FALSE, cut.max = 2)
 
 ## partial plot of peak vo2
 ## color displays interval (a measure of exercise time)
 ## size displays "y" which is predicted mortality in survival
-partial.ivarpro(i.pv, var="peak.vo2", col.var="interval", size.var="y")
+partial.ivarpro(ivp, var="peak.vo2", col.var="interval", size.var="y")
 
 ## same but using beta blockers for color
-partial.ivarpro(i.pv, var="peak.vo2", col.var="betablok", size.var="y")
+partial.ivarpro(ivp, var="peak.vo2", col.var="betablok", size.var="y")
 
 }}
 

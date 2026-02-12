@@ -26,7 +26,7 @@ get.hotencode <- function(x, papply = lapply) {
     }))
     ## store useful information from original data
     xvar.names <- colnames(x)
-    xlevels <- lapply(x[, anyF, drop = FALSE], function(x){levels(as.factor(x))})
+    xlevels <- lapply(x[, anyF, drop = FALSE], function(z) levels(factor(z)))
     ## package up as data frame, store useful attributes
     x <- data.frame(x[, !anyF, drop = FALSE], x.f)
     attr(x, "hotencode") <- TRUE

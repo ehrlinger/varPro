@@ -6,7 +6,7 @@
 }
 
 \usage{
-cv.varpro(f, data, nvar = 30, ntree = 150,
+cv.varpro(formula, data, nvar = 30, ntree = 150,
        local.std = TRUE, zcut = seq(0.1, 2, length = 50), nblocks = 10,
        split.weight = TRUE, split.weight.method = NULL, sparse = TRUE,
        nodesize = NULL, max.rules.tree = 150, max.tree = min(150, ntree), 
@@ -15,7 +15,7 @@ cv.varpro(f, data, nvar = 30, ntree = 150,
 
 \arguments{
 
-  \item{f}{Model formula specifying the outcome and predictors.}
+  \item{formula}{Model formula specifying the outcome and predictors.}
 
   \item{data}{Training data set (data frame).}
 

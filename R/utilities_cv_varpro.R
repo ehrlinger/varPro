@@ -156,7 +156,7 @@ get.sderr <- function(obj, nblocks,
   }
   ## trivial case
   if (nblocks == 1) {
-    return(c(get.sderr.workhorse(randomForestSRC::predict.rfsrc(obj,
+    return(c(get.sderr.workhorse(predict.rfsrc(obj,
           perf.type = perf.type), outcome.target = outcome.target,
           crps = crps, papply = papply, cens.dist = cens.dist), 0))
   }
@@ -164,12 +164,12 @@ get.sderr <- function(obj, nblocks,
   tree.seq <- unique(c(1, round(seq(1, obj$ntree, length = nblocks)), obj$ntree))
   err <- sapply(1:(length(tree.seq) - 1), function(j) {
     if (is.null(newdata)) {
-      get.sderr.workhorse(randomForestSRC::predict.rfsrc(obj,
+      get.sderr.workhorse(predict.rfsrc(obj,
         get.tree = tree.seq[j]:tree.seq[j+1], perf.type = perf.type),
         outcome.target = outcome.target, crps = crps, papply = papply, cens.dist = cens.dist)
     }
     else {
-     get.sderr.workhorse(randomForestSRC::predict.rfsrc(obj,
+     get.sderr.workhorse(predict.rfsrc(obj,
         newdata = newdata, get.tree = tree.seq[j]:tree.seq[j+1], perf.type = perf.type),
         outcome.target = outcome.target, crps = crps, papply = papply, cens.dist = cens.dist)
     } 
@@ -177,13 +177,6 @@ get.sderr <- function(obj, nblocks,
   ## return the mean and standard deviation of the blocked error rates
   c(mean(err, na.rm = TRUE), sd(err, na.rm = TRUE))
 }
-## unregeister foreach backend
-## https:
-## https:
-#get.unregister <- function() {
-#  env <- utils::getFromNamespace(".foreachGlobals", "foreach")
-#  rm(list=ls(name=env), pos=env)
-#}
 trapz <- function (x, y) {
   idx = 2:length(x)
   return(as.double((x[idx] - x[idx - 1]) %*% (y[idx] + y[idx - 1]))/2)

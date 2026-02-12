@@ -1,9 +1,15 @@
 Package: varPro
-Version: 2.0.0 (bld20260111)
+Version: 2.1.0 (bld20260211)
 
 
 ---------------------------------------------------------------------------------
-CHANGES TO RELEASE 2.0.0
+CHANGES TO RELEASE 2.1.0
+---------------------------------------------------------------------------------
+Major refactoring/enhancement to functions downstream from entry
+varpro() function.
+
+---------------------------------------------------------------------------------
+RELEASE 2.0.0
 ---------------------------------------------------------------------------------
 Functionality of ivarPro improved.  Code refactored to improve speed.
 All mclapply() have been eliminated or replaced by PSOCK providing

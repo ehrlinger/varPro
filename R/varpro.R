@@ -1,8 +1,6 @@
 ############################################################################
-###
 ### variable priority (varPro)
 ### regression, mv-regression, classification and survival
-###
 ### ------------------------------------------------------------------------
 ### Written by:
 ###
@@ -20,7 +18,7 @@
 ### FROM THE AUTHOR.
 ###
 ############################################################################
-varpro <- function(f, data, nvar = 30, ntree = 500, 
+varpro <- function(formula, data, nvar = 30, ntree = 500, 
                    split.weight = TRUE, split.weight.method = NULL, sparse = TRUE,
                    nodesize = NULL, max.rules.tree = 150, max.tree = min(150, ntree),
                    parallel = TRUE, cores = get.mc.cores(),
@@ -37,23 +35,27 @@ varpro <- function(f, data, nvar = 30, ntree = 500,
   ## initialize the seed
   seed <- get.seed(seed)
   ## formula must be a formula
-  f.org <- f <- as.formula(f)
+  f.org <- f <- as.formula(formula)
   ## data must be a data frame
   data <- data.frame(data)
   ## droplevels
   data <- droplevels(data)
-  ## run a stumpy tree as a quick way to determine family
-  ## use the stumped tree to acquire x and y
+  ## stumpy tree determines family and cleans up missing data 
+  ## stumped tree acquires x and y
   ## save original y - needed for coherent treatment of survival
-  ## this also cleans up missing data
+  ## hot-encode x
   stump <- get.stump(f, data)
   family <- stump$family
   yvar.names <- stump$yvar.names
   y <- stump$yvar
-  y.org <- data.frame(y)
-  colnames(y.org) <- stump$yvar.names
   x <- stump$xvar
+  if (is.factor(y)) y <- droplevels(y)
+  x <- droplevels(x)  # harmless; cleans factor columns in x if any
+  y.org <- data.frame(y)
+  colnames(y.org) <- yvar.names
   xvar.org.names <- colnames(x)
+  x <- get.hotencode(x)
+  xvar.names <- colnames(x)
   rm(stump)
   gc()
   ## coherence check
@@ -67,9 +69,6 @@ varpro <- function(f, data, nvar = 30, ntree = 500,
   else {
     yfkname <- "y"
   }
-  ## convert factors using hot-encoding
-  x <- get.hotencode(x)
-  xvar.names <- colnames(x)
   ## ------------------------------------------------------------------------
   ##
   ##
@@ -305,12 +304,27 @@ varpro <- function(f, data, nvar = 30, ntree = 500,
         }
         ## multiclass
         else {
-          o.glmnet <- tryCatch(
-               {suppressWarnings(cv.glmnet(scale(data.matrix(x)), y,
-                    nfolds = nfolds, parallel = parallel, maxit = maxit, family = "multinomial"))}, error=function(ex){NULL})
-          if (!is.null(o.glmnet)) {
-            beta <- do.call(cbind, lapply(coef(o.glmnet), function(o) {o[-1,]}))
-            xvar.wt[rownames(beta)] <- rowMeans(abs(beta), na.rm = TRUE)
+          safe.mode <- TRUE
+          if (isFALSE(safe.mode)) {
+            o.glmnet <- tryCatch(
+            {suppressWarnings(cv.glmnet(scale(data.matrix(x)), y,
+                     nfolds = nfolds, parallel = parallel, maxit = maxit, family = "multinomial"))}, error=function(ex){NULL})
+            if (!is.null(o.glmnet)) {
+              beta <- do.call(cbind, lapply(coef(o.glmnet), function(o) {o[-1,]}))
+              xvar.wt[rownames(beta)] <- rowMeans(abs(beta), na.rm = TRUE)
+            }
+          }
+          else {
+            ## mv gaussian safe mode path --> one-hot encode classes: n x K
+            y_mat <- model.matrix(~ y - 1)
+            colnames(y_mat) <- levels(y)
+            o.glmnet <- tryCatch(
+            {suppressWarnings(cv.glmnet(scale(data.matrix(x)), y_mat,
+              nfolds = nfolds, parallel = parallel, maxit = maxit, family = "mgaussian"))}, error=function(ex){NULL})
+            if (!is.null(o.glmnet)) {
+              beta <- do.call(cbind, lapply(coef(o.glmnet), function(o) o[-1, ]))
+              xvar.wt[rownames(beta)] <- rowMeans(abs(beta), na.rm = TRUE)
+            }
           }
         }
       }

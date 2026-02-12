@@ -53,6 +53,7 @@ export(
   outpro,
   outpro.null,
   predict.isopro,
+  predict.ivarpro,
   predict.uvarpro,
   predict.varpro,
   partialpro,
@@ -72,9 +73,11 @@ S3method(plot, partialpro)
 
 
 S3method(predict, isopro)
+S3method(predict, ivarpro)
 S3method(predict, uvarpro)
 S3method(predict, varpro)
 
 S3method(print, cv.varpro)
+S3method(print, ivarpro)
 
 
