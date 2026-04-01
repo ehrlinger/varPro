@@ -30,12 +30,15 @@ Kernel configured for up to 10 processors.
 Processor type: arm64e (ARM64E)
 Processors active: 0 1 2 3 4 5 6 7 8 9
 Primary memory available: 32.00 gigabytes
-Default processor set: 713 tasks, 5694 threads, 10 processors
-Load average: 6.13, Mach factor: 4.10
+Default processor set: 653 tasks, 5545 threads, 10 processors
+Load average: 4.28, Mach factor: 5.83
 /bin/machine           = unknown
 /usr/bin/oslevel       = unknown
 /bin/universe          = unknown
 
+PATH: /Users/ehrlinj/Library/Application Support/Code - Insiders/User/globalStorage/github.copilot-chat/debugCommand/
+PATH: /Users/ehrlinj/Library/Application Support/Code - Insiders/User/globalStorage/github.copilot-chat/copilotCli/
+PATH: /Applications/quarto/bin/
 PATH: /Library/Frameworks/Python.framework/Versions/3.14/bin/
 PATH: /opt/homebrew/bin/
 PATH: /opt/homebrew/sbin/
@@ -54,8 +57,9 @@ PATH: /opt/pmk/env/global/bin/
 PATH: /Library/Apple/usr/bin/
 PATH: /Library/TeX/texbin/
 PATH: /Applications/quarto/bin/
-PATH: /usr/texbin/
-PATH: /Applications/RStudio.app/Contents/Resources/app/bin/postback/
+PATH: /Users/ehrlinj/Library/Application Support/Code - Insiders/User/globalStorage/github.copilot-chat/debugCommand/
+PATH: /Users/ehrlinj/Library/Application Support/Code - Insiders/User/globalStorage/github.copilot-chat/copilotCli/
+PATH: /Library/Frameworks/Python.framework/Versions/3.14/bin/
 
 
 ## ----------- ##
@@ -94,20 +98,17 @@ clang: error: unknown argument '-version'; did you mean '--version'?
 clang: error: no input files
 configure:2746: $? = 1
 configure:2766: checking whether the C compiler works
-configure:2788: /opt/homebrew/opt/llvm/bin/clang -falign-functions=64 -Wall -g -O2 -UNDEBUG -Wall -pedantic -g -O0 -fdiagnostics-color=always -I/opt/homebrew/opt/llvm/include -I/opt/homebrew/opt/libomp/include -I/opt/homebrew/opt/gettext/include -I/opt/homebrew/opt/libpng/include -I/opt/homebrew/opt/libtiff/include -I/opt/homebrew/opt/harfbuzz/include -I/opt/homebrew/opt/fribidi/include -I/opt/homebrew/opt/libxml2/include -I/opt/homebrew/opt/openssl/include -I/opt/homebrew/opt/curl/include -I/opt/homebrew/include -L/opt/homebrew/opt/llvm/lib -L/opt/homebrew/opt/libomp/lib -lomp -L/opt/homebrew/opt/gettext/lib -L/opt/homebrew/opt/libpng/lib -L/opt-L/opt/homebrew/opt/libxml2/lib -L/opt/homebrew/opt/openssl/lib -L/opt/homebrew/opt/curl/lib -L/opt/homebrew/lib conftest.c  >&5
-ld: warning: search path '/opt-L/opt/homebrew/opt/libxml2/lib' not found
+configure:2788: /opt/homebrew/opt/llvm/bin/clang -falign-functions=64 -Wall -g -O2 -UNDEBUG -Wall -pedantic -g -O0 -fdiagnostics-color=always -I/opt/homebrew/opt/llvm/include -I/opt/homebrew/opt/libomp/include -I/opt/homebrew/opt/gettext/include -I/opt/homebrew/opt/libpng/include -I/opt/homebrew/opt/libtiff/include -I/opt/homebrew/opt/harfbuzz/include -I/opt/homebrew/opt/fribidi/include -I/opt/homebrew/opt/libxml2/include -I/opt/homebrew/opt/openssl/include -I/opt/homebrew/opt/curl/include -I/opt/homebrew/include -L/opt/homebrew/opt/gcc/lib/gcc/current conftest.c  >&5
 configure:2792: $? = 0
 configure:2843: result: yes
 configure:2847: checking for C compiler default output file name
 configure:2849: result: a.out
 configure:2855: checking for suffix of executables
-configure:2862: /opt/homebrew/opt/llvm/bin/clang -o conftest -falign-functions=64 -Wall -g -O2 -UNDEBUG -Wall -pedantic -g -O0 -fdiagnostics-color=always -I/opt/homebrew/opt/llvm/include -I/opt/homebrew/opt/libomp/include -I/opt/homebrew/opt/gettext/include -I/opt/homebrew/opt/libpng/include -I/opt/homebrew/opt/libtiff/include -I/opt/homebrew/opt/harfbuzz/include -I/opt/homebrew/opt/fribidi/include -I/opt/homebrew/opt/libxml2/include -I/opt/homebrew/opt/openssl/include -I/opt/homebrew/opt/curl/include -I/opt/homebrew/include -L/opt/homebrew/opt/llvm/lib -L/opt/homebrew/opt/libomp/lib -lomp -L/opt/homebrew/opt/gettext/lib -L/opt/homebrew/opt/libpng/lib -L/opt-L/opt/homebrew/opt/libxml2/lib -L/opt/homebrew/opt/openssl/lib -L/opt/homebrew/opt/curl/lib -L/opt/homebrew/lib conftest.c  >&5
-ld: warning: search path '/opt-L/opt/homebrew/opt/libxml2/lib' not found
+configure:2862: /opt/homebrew/opt/llvm/bin/clang -o conftest -falign-functions=64 -Wall -g -O2 -UNDEBUG -Wall -pedantic -g -O0 -fdiagnostics-color=always -I/opt/homebrew/opt/llvm/include -I/opt/homebrew/opt/libomp/include -I/opt/homebrew/opt/gettext/include -I/opt/homebrew/opt/libpng/include -I/opt/homebrew/opt/libtiff/include -I/opt/homebrew/opt/harfbuzz/include -I/opt/homebrew/opt/fribidi/include -I/opt/homebrew/opt/libxml2/include -I/opt/homebrew/opt/openssl/include -I/opt/homebrew/opt/curl/include -I/opt/homebrew/include -L/opt/homebrew/opt/gcc/lib/gcc/current conftest.c  >&5
 configure:2866: $? = 0
 configure:2890: result: 
 configure:2914: checking whether we are cross compiling
-configure:2922: /opt/homebrew/opt/llvm/bin/clang -o conftest -falign-functions=64 -Wall -g -O2 -UNDEBUG -Wall -pedantic -g -O0 -fdiagnostics-color=always -I/opt/homebrew/opt/llvm/include -I/opt/homebrew/opt/libomp/include -I/opt/homebrew/opt/gettext/include -I/opt/homebrew/opt/libpng/include -I/opt/homebrew/opt/libtiff/include -I/opt/homebrew/opt/harfbuzz/include -I/opt/homebrew/opt/fribidi/include -I/opt/homebrew/opt/libxml2/include -I/opt/homebrew/opt/openssl/include -I/opt/homebrew/opt/curl/include -I/opt/homebrew/include -L/opt/homebrew/opt/llvm/lib -L/opt/homebrew/opt/libomp/lib -lomp -L/opt/homebrew/opt/gettext/lib -L/opt/homebrew/opt/libpng/lib -L/opt-L/opt/homebrew/opt/libxml2/lib -L/opt/homebrew/opt/openssl/lib -L/opt/homebrew/opt/curl/lib -L/opt/homebrew/lib conftest.c  >&5
-ld: warning: search path '/opt-L/opt/homebrew/opt/libxml2/lib' not found
+configure:2922: /opt/homebrew/opt/llvm/bin/clang -o conftest -falign-functions=64 -Wall -g -O2 -UNDEBUG -Wall -pedantic -g -O0 -fdiagnostics-color=always -I/opt/homebrew/opt/llvm/include -I/opt/homebrew/opt/libomp/include -I/opt/homebrew/opt/gettext/include -I/opt/homebrew/opt/libpng/include -I/opt/homebrew/opt/libtiff/include -I/opt/homebrew/opt/harfbuzz/include -I/opt/homebrew/opt/fribidi/include -I/opt/homebrew/opt/libxml2/include -I/opt/homebrew/opt/openssl/include -I/opt/homebrew/opt/curl/include -I/opt/homebrew/include -L/opt/homebrew/opt/gcc/lib/gcc/current conftest.c  >&5
 configure:2926: $? = 0
 configure:2933: ./conftest
 configure:2937: $? = 0
@@ -129,7 +130,7 @@ configure:3159: /opt/homebrew/opt/llvm/bin/clang  -c -falign-functions=64 -Wall 
 configure:3159: $? = 0
 configure:3178: result: none needed
 configure:3297: checking for /opt/homebrew/opt/llvm/bin/clang option to support OpenMP
-configure:3313: /opt/homebrew/opt/llvm/bin/clang -o conftest -falign-functions=64 -Wall -g -O2 -UNDEBUG -Wall -pedantic -g -O0 -fdiagnostics-color=always -I/opt/homebrew/opt/llvm/include -I/opt/homebrew/opt/libomp/include -I/opt/homebrew/opt/gettext/include -I/opt/homebrew/opt/libpng/include -I/opt/homebrew/opt/libtiff/include -I/opt/homebrew/opt/harfbuzz/include -I/opt/homebrew/opt/fribidi/include -I/opt/homebrew/opt/libxml2/include -I/opt/homebrew/opt/openssl/include -I/opt/homebrew/opt/curl/include -I/opt/homebrew/include -L/opt/homebrew/opt/llvm/lib -L/opt/homebrew/opt/libomp/lib -lomp -L/opt/homebrew/opt/gettext/lib -L/opt/homebrew/opt/libpng/lib -L/opt-L/opt/homebrew/opt/libxml2/lib -L/opt/homebrew/opt/openssl/lib -L/opt/homebrew/opt/curl/lib -L/opt/homebrew/lib conftest.c  >&5
+configure:3313: /opt/homebrew/opt/llvm/bin/clang -o conftest -falign-functions=64 -Wall -g -O2 -UNDEBUG -Wall -pedantic -g -O0 -fdiagnostics-color=always -I/opt/homebrew/opt/llvm/include -I/opt/homebrew/opt/libomp/include -I/opt/homebrew/opt/gettext/include -I/opt/homebrew/opt/libpng/include -I/opt/homebrew/opt/libtiff/include -I/opt/homebrew/opt/harfbuzz/include -I/opt/homebrew/opt/fribidi/include -I/opt/homebrew/opt/libxml2/include -I/opt/homebrew/opt/openssl/include -I/opt/homebrew/opt/curl/include -I/opt/homebrew/include -L/opt/homebrew/opt/gcc/lib/gcc/current conftest.c  >&5
 [1mconftest.c:11:2: [0m[0;1;31merror: [0m[1m"OpenMP not supported"[0m
    11 | #error [0;32m"OpenMP not supported"[0m
       | [0;1;32m ^
@@ -164,7 +165,7 @@ configure: failed program was:
 | #include <omp.h>
 | int main (void) { return omp_get_num_threads (); }
 | 
-configure:3334: /opt/homebrew/opt/llvm/bin/clang -o conftest -falign-functions=64 -Wall -g -O2 -UNDEBUG -Wall -pedantic -g -O0 -fdiagnostics-color=always -fopenmp -I/opt/homebrew/opt/llvm/include -I/opt/homebrew/opt/libomp/include -I/opt/homebrew/opt/gettext/include -I/opt/homebrew/opt/libpng/include -I/opt/homebrew/opt/libtiff/include -I/opt/homebrew/opt/harfbuzz/include -I/opt/homebrew/opt/fribidi/include -I/opt/homebrew/opt/libxml2/include -I/opt/homebrew/opt/openssl/include -I/opt/homebrew/opt/curl/include -I/opt/homebrew/include -L/opt/homebrew/opt/llvm/lib -L/opt/homebrew/opt/libomp/lib -lomp -L/opt/homebrew/opt/gettext/lib -L/opt/homebrew/opt/libpng/lib -L/opt-L/opt/homebrew/opt/libxml2/lib -L/opt/homebrew/opt/openssl/lib -L/opt/homebrew/opt/curl/lib -L/opt/homebrew/lib conftest.c  >&5
+configure:3334: /opt/homebrew/opt/llvm/bin/clang -o conftest -falign-functions=64 -Wall -g -O2 -UNDEBUG -Wall -pedantic -g -O0 -fdiagnostics-color=always -fopenmp -I/opt/homebrew/opt/llvm/include -I/opt/homebrew/opt/libomp/include -I/opt/homebrew/opt/gettext/include -I/opt/homebrew/opt/libpng/include -I/opt/homebrew/opt/libtiff/include -I/opt/homebrew/opt/harfbuzz/include -I/opt/homebrew/opt/fribidi/include -I/opt/homebrew/opt/libxml2/include -I/opt/homebrew/opt/openssl/include -I/opt/homebrew/opt/curl/include -I/opt/homebrew/include -L/opt/homebrew/opt/gcc/lib/gcc/current conftest.c  >&5
 In file included from conftest.c:13:
 [1m/opt/homebrew/opt/libomp/include/omp.h:60:9: [0m[0;1;35mwarning: [0m[1menumerator value which exceeds the range of 'int' is a C23 extension (2147483648 is too large) [-Wc23-extensions][0m
    60 |         omp_sched_monotonic = [0;32m0x80000000[0m
@@ -179,8 +180,6 @@ In file included from conftest.c:13:
   503 |     [0;34mtypedef[0m [0;34menum[0m omp_event_handle_t { KMP_EVENT_MAX_HANDLE = UINTPTR_MAX } omp_event_handle_t;[0m
       | [0;1;32m                                      ^                      ~~~~~~~~~~~
 [0m4 warnings generated.
-ld: warning: ignoring duplicate libraries: '-lomp'
-ld: warning: search path '/opt-L/opt/homebrew/opt/libxml2/lib' not found
 configure:3334: $? = 0
 configure:3351: result: -fopenmp
 configure:3366: checking for stdio.h
@@ -240,8 +239,8 @@ generated by GNU Autoconf 2.72.  Invocation command line was
 
 on ehrlinj4F71
 
-config.status:730: creating src/Makevars.tmp
-config.status:904: creating src/Makevars
+config.status:729: creating src/Makevars.tmp
+config.status:903: creating src/Makevars
 
 ## ---------------- ##
 ## Cache variables. ##
@@ -249,13 +248,13 @@ config.status:904: creating src/Makevars
 
 ac_cv_c_compiler_gnu=yes
 ac_cv_env_CC_set=set
-ac_cv_env_CC_value=/opt/homebrew/opt/llvm/bin/clang
+ac_cv_env_CC_value=/opt/homebrew/bin/gcc-14
 ac_cv_env_CFLAGS_set=set
 ac_cv_env_CFLAGS_value='-falign-functions=64 -Wall -g -O2 -UNDEBUG -Wall -pedantic -g -O0 -fdiagnostics-color=always'
 ac_cv_env_CPPFLAGS_set=set
 ac_cv_env_CPPFLAGS_value='-I/opt/homebrew/opt/llvm/include -I/opt/homebrew/opt/libomp/include -I/opt/homebrew/opt/gettext/include -I/opt/homebrew/opt/libpng/include -I/opt/homebrew/opt/libtiff/include -I/opt/homebrew/opt/harfbuzz/include -I/opt/homebrew/opt/fribidi/include -I/opt/homebrew/opt/libxml2/include -I/opt/homebrew/opt/openssl/include -I/opt/homebrew/opt/curl/include -I/opt/homebrew/include'
 ac_cv_env_LDFLAGS_set=set
-ac_cv_env_LDFLAGS_value='-L/opt/homebrew/opt/llvm/lib -L/opt/homebrew/opt/libomp/lib -lomp -L/opt/homebrew/opt/gettext/lib -L/opt/homebrew/opt/libpng/lib -L/opt-L/opt/homebrew/opt/libxml2/lib -L/opt/homebrew/opt/openssl/lib -L/opt/homebrew/opt/curl/lib -L/opt/homebrew/lib'
+ac_cv_env_LDFLAGS_value=-L/opt/homebrew/opt/gcc/lib/gcc/current
 ac_cv_env_LIBS_set=
 ac_cv_env_LIBS_value=
 ac_cv_env_build_alias_set=
@@ -293,7 +292,7 @@ ECHO_C='\c'
 ECHO_N=''
 ECHO_T=''
 EXEEXT=''
-LDFLAGS='-L/opt/homebrew/opt/llvm/lib -L/opt/homebrew/opt/libomp/lib -lomp -L/opt/homebrew/opt/gettext/lib -L/opt/homebrew/opt/libpng/lib -L/opt-L/opt/homebrew/opt/libxml2/lib -L/opt/homebrew/opt/openssl/lib -L/opt/homebrew/opt/curl/lib -L/opt/homebrew/lib'
+LDFLAGS='-L/opt/homebrew/opt/gcc/lib/gcc/current'
 LIBOBJS=''
 LIBS=''
 LTLIBOBJS=''

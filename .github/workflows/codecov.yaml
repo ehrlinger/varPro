@@ -31,6 +31,19 @@ jobs:
         run: |
           cov <- covr::package_coverage()
           covr::to_cobertura(cov, filename = "coverage.xml")
+          pct <- covr::percent_coverage(cov)
+          summary_line <- paste0("Total coverage: ", pct)
+          writeLines(summary_line, "coverage-summary.txt")
+          step_summary <- Sys.getenv("GITHUB_STEP_SUMMARY")
+          if (nzchar(step_summary)) {
+            cat("## Coverage\n\n", summary_line, "\n", file = step_summary, append = TRUE, sep = "")
+          }
+
+      - name: Upload coverage summary artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-summary
+          path: coverage-summary.txt
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
