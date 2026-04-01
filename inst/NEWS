@@ -24,4 +24,10 @@ CRAN compliance fixes.
 RELEASE 1.0.0
 ---------------------------------------------------------------------------------
 Initial release!
+
+---------------------------------------------------------------------------------
+RELEASE 0.0.75
+---------------------------------------------------------------------------------
+Pre-1.0 development release used as the historical baseline for package
+documentation during the early public development cycle.
   
