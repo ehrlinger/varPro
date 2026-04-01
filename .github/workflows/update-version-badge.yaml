@@ -1,0 +1,44 @@
+name: update-version-badge
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read version from DESCRIPTION
+        id: version
+        run: |
+          VER=$(awk -F': ' '/^Version:/ {print $2; exit}' DESCRIPTION)
+          if [ -z "$VER" ]; then
+            echo "Version field not found in DESCRIPTION" >&2
+            exit 1
+          fi
+          echo "value=$VER" >> "$GITHUB_OUTPUT"
+
+      - name: Write badge JSON
+        run: |
+          cat > badges/version.json <<EOF
+          {
+            "schemaVersion": 1,
+            "label": "version",
+            "message": "${{ steps.version.outputs.value }}",
+            "color": "0E7C86"
+          }
+          EOF
+
+      - name: Commit badge update
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: update version badge from DESCRIPTION"
+          file_pattern: badges/version.json

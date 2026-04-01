@@ -5,7 +5,10 @@ Model-independent variable selection via rule-based variable priority.
 <!-- badges: start -->
 
 [![CRAN status](https://www.r-pkg.org/badges/version/varpro)](https://cran.r-project.org/package=varpro)
+[![Version](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kogalur/varPro/main/badges/version.json)](https://github.com/kogalur/varPro/blob/main/DESCRIPTION)
 [![Downloads](https://cranlogs.r-pkg.org/badges/varpro)](https://cranlogs.r-pkg.org/badges/varpro)
+[![R-CMD-check](https://github.com/kogalur/varPro/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/kogalur/varPro/actions/workflows/R-CMD-check.yaml)
+[![codecov](https://codecov.io/gh/kogalur/varPro/graph/badge.svg)](https://codecov.io/gh/kogalur/varPro)
 [![Project status: active](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/badges/latest/active.svg)
 
 <!-- badges: end -->
