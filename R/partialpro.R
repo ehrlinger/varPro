@@ -1,3 +1,19 @@
+#' Partial-effect summaries from varPro
+#'
+#' Computes partial-style effects for selected variables from a varpro object.
+#'
+#' @param object A varpro object.
+#' @param xvar.names Variables to process.
+#' @param nvar Maximum number of variables to process.
+#' @param target Target class/response component for classification settings.
+#' @param learner Optional custom learner callback.
+#' @param newdata Optional prediction data.
+#' @param method Isolation mode used in virtual sampling.
+#' @param verbose Logical; print progress.
+#' @param ... Additional hidden control options.
+#'
+#' @return An object of class partialpro.
+#' @export
 partialpro <- function(object,
                        xvar.names,
                        nvar,

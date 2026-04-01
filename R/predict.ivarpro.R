@@ -1,3 +1,18 @@
+#' Predict using ivarpro paths
+#'
+#' Applies ivarpro path metadata to produce case-level predicted effects.
+#'
+#' @param object An ivarpro object.
+#' @param newdata Optional data for prediction.
+#' @param model Optional model override.
+#' @param noise.na Logical; convert unstable values to NA.
+#' @param path.store.membership Logical; store membership output.
+#' @param save.data Logical; attach processed data to output.
+#' @param ... Additional arguments passed to forest prediction.
+#'
+#' @return A data frame or list depending on the ivarpro target structure.
+#' @method predict ivarpro
+#' @export
 predict.ivarpro <- function(object,
                             newdata = NULL,
                             model = NULL,

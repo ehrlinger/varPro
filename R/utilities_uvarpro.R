@@ -486,6 +486,28 @@ custom.entropy <- function(o,
   )
 }
 ## convenience function
+#' Extract entropy dependency matrix
+#'
+#' Convenience wrapper returning beta/second-stage dependency matrices.
+#'
+#' @param o A uvarpro object.
+#' @param second.stage Logical; return second-stage lasso matrix.
+#' @param pre.filter Logical; pre-filter by importance.
+#' @param papply Apply function backend.
+#' @param vimp.min Minimum importance threshold.
+#' @param nfolds Number of CV folds.
+#' @param maxit Maximum optimizer iterations.
+#' @param thresh Convergence threshold.
+#' @param parallel Logical; enable parallel mode.
+#' @param use.cv Logical; use CV in regularized fits.
+#' @param lambda.sel Lambda selection mode.
+#' @param nlambda Number of lambda values.
+#' @param lambda.min.ratio Minimum lambda ratio.
+#' @param nlambda.lasso Number of lambda values for second stage.
+#' @param lambda.min.ratio.lasso Minimum lambda ratio for second stage.
+#'
+#' @return Numeric dependency matrix.
+#' @export
 get.beta.entropy <- function(o,
                              second.stage = FALSE,
                              pre.filter = TRUE,
@@ -604,6 +626,22 @@ scaleM <- function(x, center = TRUE, scale = TRUE) {
 ## plot: whether to plot the graph using igraph
 ##
 ####################################################################
+#' Detect s-dependent variables
+#'
+#' Builds a graph from dependency scores and identifies strongly connected
+#' variables.
+#'
+#' @param I Dependency matrix.
+#' @param threshold Minimum edge threshold.
+#' @param layout Graph layout name.
+#' @param q.signal Quantile threshold for signal designation.
+#' @param directed Logical; build directed graph.
+#' @param min.degree Minimum required degree for signal nodes.
+#' @param title Plot title.
+#' @param plot Logical; draw graph.
+#'
+#' @return Invisibly returns graph-derived summaries.
+#' @export
 sdependent <- function(I,
                        threshold = .25,
                        layout = "grid",

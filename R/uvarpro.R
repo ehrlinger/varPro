@@ -1,3 +1,19 @@
+#' Unsupervised variable priority workflow
+#'
+#' Runs unsupervised/random/auto-encoder style variable-priority analysis.
+#'
+#' @param data Input data frame.
+#' @param method Unsupervised strategy.
+#' @param ntree Number of trees.
+#' @param nodesize Terminal node size.
+#' @param max.rules.tree Maximum rules per tree.
+#' @param max.tree Maximum number of trees.
+#' @param verbose Logical; print progress.
+#' @param seed Optional random seed.
+#' @param ... Additional forest and entropy options.
+#'
+#' @return An object of class uvarpro.
+#' @export
 uvarpro <- function(data,
                     method = c("auto", "unsupv", "rnd"),
                     ntree = 200, nodesize = NULL,

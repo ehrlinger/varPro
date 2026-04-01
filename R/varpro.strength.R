@@ -1,3 +1,21 @@
+#' Rule strength extraction from forest objects
+#'
+#' Extracts rule-level strength, membership, and optional nearest-neighbor data.
+#'
+#' @param object A supported rfsrc/rhf grow object.
+#' @param newdata Optional prediction data.
+#' @param m.target Optional multivariate response target.
+#' @param max.rules.tree Maximum rules per tree.
+#' @param max.tree Maximum number of trees.
+#' @param stat Statistic mode.
+#' @param membership Logical; return membership lists.
+#' @param neighbor Number of neighbors when newdata is provided.
+#' @param seed Optional random seed.
+#' @param do.trace Logical; enable tracing.
+#' @param ... Additional hidden options.
+#'
+#' @return A varpro-strength summary object.
+#' @export
 varpro.strength <- function(object,
                             newdata,
                             m.target = NULL,

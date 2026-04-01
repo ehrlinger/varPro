@@ -6,6 +6,14 @@ get.stump <- function(f, data) {
 ## robust sample
 resample <- function(x, ...) x[sample.int(length(x), ...)]
 ## rough imputation - avoids using non-exported get.na.roughfix 
+#' Rough imputation for mixed data
+#'
+#' Simple rough-fix style imputation for numeric/factor data frame columns.
+#'
+#' @param data Data frame with missing values.
+#'
+#' @return Data frame with missing values imputed.
+#' @export
 roughfix <- function(data) {
   imean <- lapply(data, function(x) {
     if (all(is.na(x))) {

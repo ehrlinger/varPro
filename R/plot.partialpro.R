@@ -1,3 +1,20 @@
+#' Plot partialpro results
+#'
+#' Visualizes partialpro outputs with optional stratification and smoothing.
+#'
+#' @param x A partialpro object/list.
+#' @param xvar.names Variables to plot.
+#' @param nvar Maximum number of variables to plot.
+#' @param parametric Logical; use parametric curves.
+#' @param se Logical; show uncertainty bands where available.
+#' @param causal Logical; use causal-style summary where available.
+#' @param subset Optional subset or grouping factor.
+#' @param plot.it Logical; draw plots.
+#' @param ... Additional plotting controls.
+#'
+#' @return Plot metadata invisibly.
+#' @method plot partialpro
+#' @export
 plot.partialpro <- function(x, xvar.names, nvar,
         parametric = FALSE, se = TRUE,
         causal = FALSE, subset = NULL,

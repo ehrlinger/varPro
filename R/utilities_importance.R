@@ -1,3 +1,13 @@
+#' Build custom split-weight vector
+#'
+#' Constructs a split-weight vector aligned to internally encoded predictors.
+#'
+#' @param f Model formula.
+#' @param data Data frame.
+#' @param namedvec Optional named numeric overrides.
+#'
+#' @return Named numeric split-weight vector.
+#' @export
 get.splitweight.custom <- function(f, data, namedvec = NULL) {
   x <- get.hotencode(get.stump(f, data)$xvar)
   swt <- rep(1, ncol(x))
@@ -11,6 +21,15 @@ get.splitweight.custom <- function(f, data, namedvec = NULL) {
   }
   swt
 }
+#' Map importance back to original variables
+#'
+#' @param o A varpro, cv.varpro, or uvarpro object.
+#' @param pretty Logical; return prettified output.
+#' @param local.std Logical; use local standardized importance for varpro/uvarpro.
+#' @param vmp Optional precomputed importance table.
+#'
+#' @return Importance summaries on original variable names.
+#' @export
 get.orgvimp <- function(o, pretty = TRUE, local.std = TRUE, vmp = NULL) {
   ## input value must be a varpro, cv.varpro or uvarpro object
   if (!(inherits(o, "varpro") ||
@@ -95,6 +114,13 @@ get.orgvimp <- function(o, pretty = TRUE, local.std = TRUE, vmp = NULL) {
   }
 }
 ## extract names of signal variables from varpro analysis
+#' Get top selected variable names
+#'
+#' @param o A varpro or uvarpro object.
+#' @param local.std Logical; use local standardized importance.
+#'
+#' @return Character vector of selected variable names.
+#' @export
 get.topvars <- function(o, local.std = TRUE) {
   ## input value must be a varpro or uvarpro object
   if (!(inherits(o, "varpro") || inherits(o, "uvarpro"))) {
@@ -114,6 +140,14 @@ get.topvars <- function(o, local.std = TRUE) {
   rownames(vmp)
 }
 ## extract vimp
+#' Extract variable-importance values
+#'
+#' @param o A varpro, cv.varpro, or uvarpro object.
+#' @param pretty Logical; return compact named output.
+#' @param local.std Logical; use local standardized importance.
+#'
+#' @return Importance values in named vector/list/data-frame form.
+#' @export
 get.vimp <- function(o, pretty = TRUE, local.std = TRUE) {
   ## input value must be a varpro, cv.varpro or uvarpro object
   if (!(inherits(o, "varpro") ||

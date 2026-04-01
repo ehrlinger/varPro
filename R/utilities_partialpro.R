@@ -74,7 +74,16 @@ myunique <- function(x, npts, alpha = .05, nfactor = 10) {
 ## bart learner
 ##
 ##---------------------------------------------------------------
-predict.wbart <- utils::getFromNamespace("predict.wbart", "BART")
+predict_wbart <- utils::getFromNamespace("predict.wbart", "BART")
+#' BART learner wrapper for varPro
+#'
+#' Constructs a prediction function based on BART for use in partialpro flows.
+#'
+#' @param o A varpro object.
+#' @param ... Additional learner options.
+#'
+#' @return A prediction function.
+#' @export
 bart.learner <- function(o, ...) {
   ## input value must be a varpro object
   if (!inherits(o, "varpro")) {
@@ -94,7 +103,7 @@ bart.learner <- function(o, ...) {
       mybartlearner$yhat.train.mean
     }
     else {
-      invisible(capture.output(yhat <- predict.wbart(mybartlearner,
+      invisible(capture.output(yhat <- predict_wbart(mybartlearner,
       x[, o$xvar.names, drop = FALSE], mc.cores = mc.cores)))
       colMeans(yhat, na.rm = TRUE)
     }
@@ -105,6 +114,15 @@ bart.learner <- function(o, ...) {
 ## boosted learner
 ##
 ##---------------------------------------------------------------
+#' GBM learner wrapper for varPro
+#'
+#' Constructs a gradient-boosting prediction function for varpro analysis.
+#'
+#' @param o A varpro object.
+#' @param ... Additional GBM options.
+#'
+#' @return A prediction function.
+#' @export
 gbm.learner <- function(o, ...) {
   ## input value must be a varpro object
   if (!inherits(o, "varpro")) {
@@ -171,6 +189,15 @@ gbm.learner <- function(o, ...) {
 ## rf learner
 ##
 ##---------------------------------------------------------------
+#' Random-forest learner wrapper for varPro
+#'
+#' Constructs a randomForestSRC prediction function for varpro analysis.
+#'
+#' @param o A varpro object.
+#' @param ... Additional randomForestSRC options.
+#'
+#' @return A prediction function.
+#' @export
 rf.learner <- function(o, ...) {
   ## input value must be a varpro object
   if (!inherits(o, "varpro")) {

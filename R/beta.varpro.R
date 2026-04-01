@@ -1,4 +1,19 @@
 ## legacy - however function is well written so keep it for now
+#' Rule-level beta summaries for varpro
+#'
+#' Computes rule-level coefficient magnitude summaries from fitted varpro output.
+#'
+#' @param o A varpro object.
+#' @param use.cv Logical; use cross-validated glmnet fits.
+#' @param use.1se Logical; for CV fits use lambda.1se instead of lambda.min.
+#' @param nfolds Number of CV folds.
+#' @param maxit Maximum optimizer iterations.
+#' @param thresh Convergence threshold.
+#' @param max.rules.tree Maximum rules per tree.
+#' @param max.tree Maximum number of trees.
+#'
+#' @return Rule-level beta summaries.
+#' @export
 beta.varpro <- function(o,
                         use.cv = FALSE,
                         use.1se = TRUE,

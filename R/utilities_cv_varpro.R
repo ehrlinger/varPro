@@ -63,6 +63,13 @@ get.crps <- function (o, papply = lapply, cens.dist = NULL)  {
   crps / max(brier.score$time)
 }
 ## This is the analog of get.rf.cores(). It sets the core usage for use by the "parallel" package.
+#' Determine default mc.cores setting
+#'
+#' Returns the core count used by varPro helper code, honoring user and check
+#' environment settings.
+#'
+#' @return Integer number of cores.
+#' @export
 get.mc.cores <- function() {
     ## PART I:  Two ways for the user to specify cores:
     ## (1) R-option "mc.cores"

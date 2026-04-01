@@ -1,3 +1,19 @@
+#' Isolation-style scoring with varPro forests
+#'
+#' Fits an isolation-style forest workflow for unsupervised, random-split,
+#' or supervised settings.
+#'
+#' @param object Optional varpro object used as a feature source.
+#' @param method Isolation strategy.
+#' @param sampsize Sampling size specification.
+#' @param ntree Number of trees.
+#' @param nodesize Terminal node size.
+#' @param formula Optional supervised formula.
+#' @param data Optional data frame.
+#' @param ... Additional forest arguments.
+#'
+#' @return An object of class isopro.
+#' @export
 isopro <- function(object,
                    method = c("unsupv", "rnd", "auto"),
                    sampsize = function(x){min(2^6, .632 * x)},

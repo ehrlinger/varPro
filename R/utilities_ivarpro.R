@@ -50,6 +50,25 @@
   }
   ivar_list[[sel_idx]]
 }
+#' SHAP-style summary plot for ivarpro
+#'
+#' Draws a SHAP-style summary visualization from ivarpro gradients.
+#'
+#' @param ivar ivarpro output (matrix/data frame or list).
+#' @param dat Optional original data used for coloring/alignment.
+#' @param feature_names Optional feature-name override.
+#' @param max.points Maximum number of plotted points.
+#' @param max.points.per.feature Optional per-feature point cap.
+#' @param point.alpha Point alpha.
+#' @param point.size Point size.
+#' @param point.pch Point symbol.
+#' @param scale.value Logical; scale feature values for color mapping.
+#' @param style Plotting style.
+#' @param blobby.separation Separation factor for blobby mode.
+#' @param target Optional target selector for list outputs.
+#'
+#' @return Invisibly returns NULL after plotting.
+#' @export
 shap.ivarpro <- function(ivar,
                          dat = NULL,
                          feature_names = NULL,
@@ -361,6 +380,29 @@ shap.ivarpro <- function(ivar,
 ## partial plot 
 ##
 ##############################################################
+#' Partial plot for ivarpro gradients
+#'
+#' Draws partial-effect style plots from ivarpro outputs.
+#'
+#' @param ivar ivarpro output.
+#' @param var Variable to display on x-axis.
+#' @param col.var Optional variable for color encoding.
+#' @param size.var Optional variable for point-size encoding.
+#' @param x Optional data matrix/data frame.
+#' @param ladder Logical; show ladder segments.
+#' @param ladder.cuts Optional ladder cuts.
+#' @param ladder.max.segments Maximum rendered ladder segments.
+#' @param pch Point symbol.
+#' @param cex Point size.
+#' @param cex.range Range for scaled point sizes.
+#' @param main Optional title.
+#' @param xlab Optional x-axis label.
+#' @param ylab y-axis label.
+#' @param legend Logical; draw legend.
+#' @param ... Additional plotting options.
+#'
+#' @return Plot metadata invisibly.
+#' @export
 partial.ivarpro <- function(ivar,
                             var,
                             col.var = NULL,

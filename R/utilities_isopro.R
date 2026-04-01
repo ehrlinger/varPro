@@ -5,6 +5,15 @@
 ##
 ##
 ####################################################################
+#' Isolation performance metrics
+#'
+#' Computes AUC and PR-AUC for binary isolation scores.
+#'
+#' @param y Binary observed labels.
+#' @param p Predicted score/probability values.
+#'
+#' @return Named numeric vector with auc and pr.auc.
+#' @export
 get.iso.performance <- function(y, p) {
   ## only works for binary y
   if (length(unique(y)) != 2) {

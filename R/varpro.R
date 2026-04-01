@@ -18,6 +18,29 @@
 ### FROM THE AUTHOR.
 ###
 ############################################################################
+#' Fit a varPro model
+#'
+#' Main entry point for model-independent variable selection using rule-based
+#' variable priority.
+#'
+#' @param formula Formula specifying response and predictors.
+#' @param data Data frame containing analysis variables.
+#' @param nvar Maximum number of variables to retain.
+#' @param ntree Number of trees.
+#' @param split.weight Logical; whether to use split weighting.
+#' @param split.weight.method Optional split-weight strategy.
+#' @param sparse Logical; whether sparse weighting is used.
+#' @param nodesize Terminal node size.
+#' @param max.rules.tree Maximum rules retained per tree.
+#' @param max.tree Maximum number of trees used in rule extraction.
+#' @param parallel Logical; whether parallel execution is requested.
+#' @param cores Number of worker cores.
+#' @param verbose Logical; print progress.
+#' @param seed Optional random seed.
+#' @param ... Additional control arguments.
+#'
+#' @return An object of class varpro.
+#' @export
 varpro <- function(formula, data, nvar = 30, ntree = 500, 
                    split.weight = TRUE, split.weight.method = NULL, sparse = TRUE,
                    nodesize = NULL, max.rules.tree = 150, max.tree = min(150, ntree),

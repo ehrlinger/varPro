@@ -1,3 +1,18 @@
+#' Outlier proximity scoring with varPro
+#'
+#' Computes rule-based neighborhood distances for outlier detection.
+#'
+#' @param object A varpro object or supported forest grow object.
+#' @param newdata Optional test data.
+#' @param neighbor Number of neighbors.
+#' @param distancef Distance aggregation function.
+#' @param reduce Variable reduction specification.
+#' @param cutoff Importance cutoff used when reduce is TRUE.
+#' @param max.rules.tree Maximum rules per tree.
+#' @param max.tree Maximum tree count.
+#'
+#' @return A list containing distances and related metadata.
+#' @export
 outpro <- function(object,
                    newdata,
                    neighbor = NULL,
@@ -124,6 +139,16 @@ outpro <- function(object,
 ###################################################################
 ### Null calibration helper
 ###################################################################
+#' Null calibration for outpro distances
+#'
+#' Calibrates outpro distances by estimating an empirical null CDF.
+#'
+#' @inheritParams outpro
+#' @param nulldata Optional null/reference data.
+#'
+#' @return An outpro object augmented with empirical CDF outputs.
+#' @rdname outpro.null
+#' @export
 outpro.null <- function(object,
                         nulldata = NULL,
                         neighbor = NULL,

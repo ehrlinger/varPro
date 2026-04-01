@@ -1,3 +1,16 @@
+#' Cross-validated variable priority
+#'
+#' Cross-validation wrapper around varPro variable selection.
+#'
+#' @inheritParams varpro
+#' @param local.std Logical; use local standardization.
+#' @param zcut Candidate z-score thresholds.
+#' @param nblocks Number of cross-validation blocks.
+#' @param fast Logical; whether to use fast splitting.
+#' @param crps Logical; use CRPS for survival evaluation.
+#'
+#' @return An object of class cv.varpro.
+#' @export
 cv.varpro <- function(formula, data, nvar = 30, ntree = 150,
                       local.std = TRUE, zcut = seq(0.1, 2, length = 50), nblocks = 10,
                       split.weight = TRUE, split.weight.method = NULL, sparse = TRUE,
@@ -283,6 +296,13 @@ cv.varpro <- function(formula, data, nvar = 30, ntree = 150,
   return(rO)
 }
 ## custom print object for cv to make attributes invisible
+#' Print cv.varpro
+#'
+#' @param x A cv.varpro object.
+#' @param ... Additional print options.
+#' @return The input object invisibly.
+#' @method print cv.varpro
+#' @export
 print.cv.varpro <- function(x, ...) {
   attr(x, "class") <- attr(x, "imp.org") <- attr(x, "xvar.names") <-
     attr(x, "xvar.org.names") <- attr(x, "family") <- NULL

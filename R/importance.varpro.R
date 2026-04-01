@@ -9,13 +9,34 @@
 ###    
 ###
 ####################################################################
-importance.varpro <- function(o, local.std = TRUE, y.external = NULL,
+#' Variable importance for varPro objects
+#'
+#' Computes and optionally plots variable importance summaries.
+#'
+#' @param object A varpro or uvarpro object.
+#' @param local.std Logical; use local standardization.
+#' @param y.external Optional external response for local standardization.
+#' @param cutoff Threshold used in summarized output.
+#' @param trim Trimming fraction for plotting/output summaries.
+#' @param plot.it Logical; whether to draw plots.
+#' @param conf Logical; include confidence-based plotting scale.
+#' @param sort Logical; sort results.
+#' @param ylab Y-axis label.
+#' @param max.rules.tree Optional override for max rules per tree.
+#' @param max.tree Optional override for max tree count.
+#' @param ... Additional plotting and computation options.
+#'
+#' @return Importance summaries; structure depends on family/object type.
+#' @name importance.varpro
+#' @export
+importance.varpro <- function(object, local.std = TRUE, y.external = NULL,
                               cutoff = 0.79, trim = 0.1,
                               plot.it = FALSE, conf = TRUE, sort = TRUE,
                               ylab = if (conf) "Importance" else "Standardized Importance",
                               max.rules.tree, max.tree,
                               ...)
 {
+  o <- object
   ## ------------------------------------------------------------------------
   ##
   ## coherence of incoming object 
@@ -99,7 +120,7 @@ importance.varpro <- function(o, local.std = TRUE, y.external = NULL,
   ##
   ## ------------------------------------------------------------------------
   if (o$family != "regr+") {
-    importance.varpro.workhorse(o = o,
+    importance_varpro_workhorse(o = o,
                                 cutoff = cutoff,
                                 trim = trim,
                                 plot.it = plot.it,
@@ -117,7 +138,7 @@ importance.varpro <- function(o, local.std = TRUE, y.external = NULL,
   else {
     lapply(1:ncol(o$y), function(j) {
       o$results <- o$results[, c((1:4), 4+j)]
-      importance.varpro.workhorse(o = o,
+      importance_varpro_workhorse(o = o,
                                   cutoff = cutoff,
                                   trim = trim,
                                   plot.it = FALSE,
@@ -127,8 +148,7 @@ importance.varpro <- function(o, local.std = TRUE, y.external = NULL,
     })
   }
 }
-importance <- importance.varpro 
-importance.varpro.workhorse <- function(o, cutoff, trim, plot.it, conf, sort,
+importance_varpro_workhorse <- function(o, cutoff, trim, plot.it, conf, sort,
               ylab, local.std, ...) {
   ## ------------------------------------------------------------------------
   ##

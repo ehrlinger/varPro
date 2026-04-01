@@ -1,3 +1,14 @@
+#' Predict from uvarpro
+#'
+#' Produces reconstructed values and error summaries for uvarpro objects.
+#'
+#' @param object A uvarpro object.
+#' @param newdata Optional prediction data.
+#' @param ... Additional arguments passed to forest prediction.
+#'
+#' @return Predicted matrix with mse attributes.
+#' @method predict uvarpro
+#' @export
 predict.uvarpro <- function(object, newdata, ...) {
   ## check coherence: failure is fatal
   if (!inherits(object, "uvarpro")) {

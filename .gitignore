@@ -1,0 +1,8 @@
+# Local compilation artifacts
+src/*.o
+src/*.so
+src/**/*.o
+src/**/*.so
+src/**/*.a
+src/**/*.dll
+.Rproj.user

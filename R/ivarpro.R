@@ -1,6 +1,30 @@
 ## ============================================================
 ## iVarPro (case-specific variable importance) with cut-ladder path
 ## ============================================================
+#' Case-specific variable effects with ivarpro
+#'
+#' Computes individual-level variable effect summaries from varPro/rfsrc models.
+#'
+#' @param object A varpro object or supported forest object.
+#' @param adaptive Logical; use adaptive cut grid.
+#' @param cut Optional explicit cut values.
+#' @param cut.max Maximum cut value used to build a cut grid.
+#' @param ncut Number of cut values.
+#' @param nmin Minimum local neighborhood size.
+#' @param nmax Maximum local neighborhood size.
+#' @param y.external Optional external response matrix/vector.
+#' @param noise.na Logical; set unstable estimates to NA.
+#' @param max.rules.tree Maximum rules per tree used from strength extraction.
+#' @param max.tree Maximum number of trees used from strength extraction.
+#' @param use.loo Logical; use leave-one-out stabilizing options.
+#' @param use.abs Logical; aggregate by absolute effects.
+#' @param path.store.membership Logical; store path membership data.
+#' @param save.data Logical; attach source data to output.
+#' @param save.model Logical; attach model object to output.
+#' @param scale Scaling mode.
+#'
+#' @return An ivarpro object or list for multivariate outputs.
+#' @export
 ivarpro <- function(object,
                     adaptive = TRUE,
                     cut = NULL,
@@ -311,6 +335,14 @@ ivarpro <- function(object,
 ## For multivariate/multiclass ivarpro objects (a list with class c("ivarpro","list")),
 ## this prints a short summary by default. Use print(x, full=TRUE) to print the full list.
 ## ------------------------------------------------------------
+#' Print ivarpro
+#'
+#' @param x An ivarpro object.
+#' @param ... Additional print options.
+#' @param full Logical; print full details.
+#' @return The input object invisibly.
+#' @method print ivarpro
+#' @export
 print.ivarpro <- function(x, ..., full = FALSE) {
   ## Multivariate/multiclass: list of gradient matrices
   if (is.list(x) && !inherits(x, "data.frame")) {
