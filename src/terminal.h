@@ -12,6 +12,8 @@ struct terminal {
   double         *oobMaxClass;
   double       *complementMortality;
   double        oobMortality;
+  double       *compWirResponse;
+  double         oobWirResponse;
   uint repMembrCount, oobMembrCount, ibgMembrCount, allMembrCount, testMembrCount;
   uint *repMembrIndx, *oobMembrIndx, *ibgMembrIndx, *allMembrIndx, *testMembrIndx;
 };

@@ -18,6 +18,17 @@ varpro.strength <- function(object,
     else {
         stop("This function only works for objects of class '(rfsrc, grow)' and '(rhf, grow)'")
     }
+    is.rhf.grow <- sum(inherits(object, c("rhf", "grow"), TRUE) == c(1, 2)) == 2
+    if (is.rhf.grow) {
+        ## default pseudo-response for RHF
+        w.ir <- object$int.haz.oob
+        if (is.null(w.ir)) {
+            stop("For RHF, supply w.ir or fit/store int.haz.inbag.")
+        }
+    }
+    else {
+        w.ir <- NULL
+    }
   ## get any hidden options
   user.option <- list(...)
   if(max.rules.tree > 2^31 - 1) {
@@ -72,9 +83,16 @@ varpro.strength <- function(object,
   ## Short cut to get the y-outcome type and number of levels.
   yvar.types <- yfactor$types
   yvar.nlevels  <- yfactor$nlevels
-  yvar.numeric.levels  <- yfactor$numeric.levels
-  ## Recover the individual subject identifiers, if they exist.
-  subj <- object$subj
+  yvar.numeric.levels <- yfactor$numeric.levels
+  ## Slight differences in RSF vs RHF:
+  if (sum(inherits(object, c("rfsrc", "forest"), TRUE) == c(1, 2)) == 2) {
+      ## Recover the individual subject identifiers, if they exist.
+      subj <- object$subj
+  }
+  else if (sum(inherits(object, c("rhf", "forest"), TRUE) == c(1, 2)) == 2) {
+      ## Recover the individual subject identifiers, if they exist.
+      subj <- object$id
+  }
   ## Get event information for survival families.
   event.info <- object$event.info
   event.type <- event.info$event.type
@@ -139,7 +157,7 @@ varpro.strength <- function(object,
       samptype.bits <- get.samptype.bits(object$samptype)
   }
   else if (sum(inherits(object, c("rhf", "forest"), TRUE) == c(1, 2)) == 2) {
-      sampsize <- round(object$parms$sampsize(n))
+      sampsize <- object$parms$sampsize
       case.wt <- object$parms$case.wt
       samp <- object$parms$samp
       bootstrap.bits <- get.bootstrap.bits(object$parms$bootstrap)      
@@ -177,6 +195,8 @@ varpro.strength <- function(object,
   }
   ## Start the C external timer.
   ctime.external.start  <- proc.time()
+##    source("varProStrength_call_dump.R")
+##    source("varProStrength_call_dump_INSERT.R")
   nativeOutput <- tryCatch({.Call("varProStrength",
                                   as.integer(do.trace),
                                   as.integer(seed),
@@ -195,7 +215,7 @@ varpro.strength <- function(object,
                                        if (is.null(samp)) NULL else as.integer(samp)),
                                   list(if (is.null(m.target.idx)) as.integer(0) else as.integer(length(m.target.idx)),
                                        if (is.null(m.target.idx)) NULL else as.integer(m.target.idx)),
-                                  list(as.integer(length(yvar.types)),
+                                  list(if (is.null(yvar.types)) NULL else as.integer(length(yvar.types)),
                                        if (is.null(yvar.types)) NULL else as.character(yvar.types),
                                        if (is.null(yvar.types)) NULL else as.integer(yvar.nlevels),
                                        if (is.null(yvar.numeric.levels)) NULL else sapply(1:length(yvar.numeric.levels), function(nn) {as.integer(length(yvar.numeric.levels[[nn]]))}),
@@ -210,8 +230,9 @@ varpro.strength <- function(object,
                                              function(nn) {as.integer(yvar.numeric.levels[[nn]])})
                                   },
                                   if (is.null(yvar.types)) NULL else as.double(as.vector(yvar)),
+                                  if (is.null(w.ir)) NULL else as.double(w.ir),
                                   list(as.integer(n.xvar),
-                                       as.character(xvar.types),
+                                       if (is.null(xvar.types)) NULL else as.character(xvar.types),
                                        if (is.null(xvar.types)) NULL else as.integer(xvar.nlevels),
                                        if (is.null(xvar.numeric.levels)) NULL else sapply(1:length(xvar.numeric.levels), function(nn) {as.integer(length(xvar.numeric.levels[[nn]]))}),
                                        NULL,
@@ -246,28 +267,76 @@ varpro.strength <- function(object,
                                   as.integer((object$nativeArray)$mwcpSZ),
                                   as.integer((object$nativeArray)$fsrecID),
                                   if (is.null((object$nativeFactorArray)$mwcpPT)) NULL else as.integer((object$nativeFactorArray)$mwcpPT)),
-                                  as.integer(object$nativeArrayTNDS$tnRMBR),
-                                  as.integer(object$nativeArrayTNDS$tnAMBR),
-                                  as.integer(object$nativeArrayTNDS$tnOMBR),
-                                  as.integer(object$nativeArrayTNDS$tnIMBR),
-                                  as.integer(object$nativeArrayTNDS$tnRCNT),
-                                  as.integer(object$nativeArrayTNDS$tnACNT),
-                                  as.integer(object$nativeArrayTNDS$tnOCNT),
-                                  as.integer(object$nativeArrayTNDS$tnICNT),
-                                  as.integer(object$nativeArrayTNDS$oobSZ),
-                                  as.integer(object$nativeArrayTNDS$ibgSZ),
-                                  as.double((object$nativeArrayTNDS$tnSURV)),
-                                  as.double((object$nativeArrayTNDS$tnMORT)),
-                                  as.double((object$nativeArrayTNDS$tnNLSN)),
-                                  as.double((object$nativeArrayTNDS$tnCSHZ)),
-                                  as.double((object$nativeArrayTNDS$tnCIFN)),
-                                  as.double((object$nativeArrayTNDS$tnREGR)),
-                                  as.integer((object$nativeArrayTNDS$tnCLAS)),
+                                  if (sum(inherits(object, c("rfsrc", "forest"), TRUE) == c(1, 2)) == 2)
+                                      as.integer(object$nativeArrayTNDS$tnRMBR)
+                                  else if (sum(inherits(object, c("rhf", "forest"), TRUE) == c(1, 2)) == 2) 
+                                      as.integer(object$trmbrCaseId),
+                                  if (sum(inherits(object, c("rfsrc", "forest"), TRUE) == c(1, 2)) == 2)
+                                      as.integer(object$nativeArrayTNDS$tnAMBR)
+                                  else if (sum(inherits(object, c("rhf", "forest"), TRUE) == c(1, 2)) == 2) 
+                                      NULL,
+                                  if (sum(inherits(object, c("rfsrc", "forest"), TRUE) == c(1, 2)) == 2)
+                                      as.integer(object$nativeArrayTNDS$tnOMBR)
+                                  else if (sum(inherits(object, c("rhf", "forest"), TRUE) == c(1, 2)) == 2) 
+                                      as.integer(object$tombrCaseId),
+                                  if (sum(inherits(object, c("rfsrc", "forest"), TRUE) == c(1, 2)) == 2)
+                                      as.integer(object$nativeArrayTNDS$tnIMBR)
+                                  else if (sum(inherits(object, c("rhf", "forest"), TRUE) == c(1, 2)) == 2) 
+                                      as.integer(object$timbrCaseId),
+                                  if (sum(inherits(object, c("rfsrc", "forest"), TRUE) == c(1, 2)) == 2)
+                                      as.integer(object$nativeArrayTNDS$tnRCNT)
+                                  else if (sum(inherits(object, c("rhf", "forest"), TRUE) == c(1, 2)) == 2) 
+                                      as.integer(object$trmbrCaseCt),
+                                  if (sum(inherits(object, c("rfsrc", "forest"), TRUE) == c(1, 2)) == 2)
+                                      as.integer(object$nativeArrayTNDS$tnACNT)
+                                  else if (sum(inherits(object, c("rhf", "forest"), TRUE) == c(1, 2)) == 2) 
+                                      NULL,
+                                  if (sum(inherits(object, c("rfsrc", "forest"), TRUE) == c(1, 2)) == 2)
+                                      as.integer(object$nativeArrayTNDS$tnOCNT)
+                                  else if (sum(inherits(object, c("rhf", "forest"), TRUE) == c(1, 2)) == 2) 
+                                      as.integer(object$tombrCaseCt),
+                                  if (sum(inherits(object, c("rfsrc", "forest"), TRUE) == c(1, 2)) == 2)
+                                      as.integer(object$nativeArrayTNDS$tnICNT)
+                                  else if (sum(inherits(object, c("rhf", "forest"), TRUE) == c(1, 2)) == 2) 
+                                      as.integer(object$timbrCaseCt),
+                                  if (sum(inherits(object, c("rfsrc", "forest"), TRUE) == c(1, 2)) == 2)
+                                      as.integer(object$nativeArrayTNDS$oobSZ)
+                                  else if (sum(inherits(object, c("rhf", "forest"), TRUE) == c(1, 2)) == 2) 
+                                      as.integer(object$oobSizeCase),    
+                                  if (sum(inherits(object, c("rfsrc", "forest"), TRUE) == c(1, 2)) == 2)
+                                      as.integer(object$nativeArrayTNDS$ibgSZ)
+                                  else if (sum(inherits(object, c("rhf", "forest"), TRUE) == c(1, 2)) == 2) 
+                                      as.integer(object$ibgSizeCase),
+                                  if (sum(inherits(object, c("rfsrc", "forest"), TRUE) == c(1, 2)) == 2)
+                                      as.double((object$nativeArrayTNDS$tnSURV))
+                                  else NULL,
+                                  if (sum(inherits(object, c("rfsrc", "forest"), TRUE) == c(1, 2)) == 2)
+                                      as.double((object$nativeArrayTNDS$tnMORT))
+                                  else NULL,
+                                  if (sum(inherits(object, c("rfsrc", "forest"), TRUE) == c(1, 2)) == 2)
+                                      as.double((object$nativeArrayTNDS$tnNLSN))
+                                  else NULL,
+                                  if (sum(inherits(object, c("rfsrc", "forest"), TRUE) == c(1, 2)) == 2)
+                                      as.double((object$nativeArrayTNDS$tnCSHZ))
+                                  else NULL,
+                                  if (sum(inherits(object, c("rfsrc", "forest"), TRUE) == c(1, 2)) == 2)
+                                      as.double((object$nativeArrayTNDS$tnCIFN))
+                                  else NULL,
+                                  if (sum(inherits(object, c("rfsrc", "forest"), TRUE) == c(1, 2)) == 2)
+                                      as.double((object$nativeArrayTNDS$tnREGR))
+                                  else NULL,
+                                  if (sum(inherits(object, c("rfsrc", "forest"), TRUE) == c(1, 2)) == 2)
+                                      as.integer((object$nativeArrayTNDS$tnCLAS))
+                                  else NULL,
                                   as.integer(max.rules.tree),
                                   as.integer(max.tree),
                                   as.integer(get.tree),
                                   as.integer(get.rf.cores()))},
-                           error = function(e) {NULL}
+                           ## error = function(e) {NULL}
+                           ## comment above and uncomment below to
+                           ## reveal more deets if the .Call() is
+                           ## failing before entry.c :
+                           error = function(e) { print(e); NULL }
                            )
   ## Stop the C external timer.
   ctime.external.stop <- proc.time()
@@ -348,10 +417,11 @@ varpro.strength <- function(object,
                                               nativeOutput$statComplement[1:strengthArraySize]))
           strengthArrayHeader <- c(strengthArrayHeader, "mortalityComplement")
       }
-      else if(stat == "branch") {
+      else if(stat == "oob") {
           strengthArray = as.data.frame(cbind(strengthArray,
                                               nativeOutput$statBranch[1:strengthArraySize]))
-          strengthArrayHeader <- c(strengthArrayHeader, "mortalityOOB")
+          strengthArrayHeader <- c(strengthArrayHeader,
+                             if (is.null(w.ir)) "mortalityOOB" else "wirOOB")
       }
   }
   else if(family == "regr") {
@@ -492,80 +562,107 @@ varpro.strength <- function(object,
   ## -----------------------------------------------------------------
   if (membership) {
     ## number of records in strengthArray
-    membershipListSize <- dim(strengthArray)[1]
-    ## initialize the complement count vectors
-    count <- strengthArray$compCT
-    countTo = cumsum(count)
-    countFrom = countTo + 1
-    countFrom = c(1, countFrom)
-    countFrom = countFrom[-length(countFrom)]
+    membershipListSize <- nrow(strengthArray)
+    ## initialize the complement count vectors using doubles to avoid
+    ## integer overflow for very large forests / membership payloads.
+    count <- as.double(strengthArray$compCT)
+    if (any(!is.finite(count)) || any(count < 0)) {
+      stop("Encountered invalid complement membership counts in 'compCT'.")
+    }
+    countTo <- cumsum(count)
+    countFrom <- if (membershipListSize > 0L) {
+      c(1, head(countTo, -1L) + 1)
+    } else {
+      numeric(0)
+    }
     ## create complement membership list that will contain the complement
     ## members for each tree, branch, and xReleaseID
-    compMembershipList <- vector("list", length = dim(strengthArray)[1])
-    ## initialize the complement memebrship list
-    for(i in 1:membershipListSize) {
-      if(countTo[i] >= countFrom[i]) {
-        compMembershipList[[i]] = nativeOutput$complementMembers[countFrom[i]:countTo[i]]
-      } else {
-        compMembershipList[[i]] = list(NULL)
+    compMembershipList <- vector("list", length = membershipListSize)
+    if (membershipListSize > 0L) {
+      n.comp <- length(nativeOutput$complementMembers)
+      if (tail(countTo, 1L) > n.comp) {
+        stop("Complement membership offsets exceed the length of 'complementMembers'.")
+      }
+      ## initialize the complement membership list
+      for (i in seq_len(membershipListSize)) {
+        if (countTo[i] >= countFrom[i]) {
+          compMembershipList[[i]] <- nativeOutput$complementMembers[
+            seq.int(countFrom[i], countTo[i])
+          ]
+        } else {
+          compMembershipList[[i]] <- list(NULL)
+        }
       }
     }
-    ## create and zero the maximum vector
-    countBRM = rep(0, membershipListSize)
+    ## create and zero the maximum vector.  Keep this double-valued as well
+    ## so the cumulative branch counts remain safe at large scale.
+    countBRM <- numeric(membershipListSize)
     ## k will count the number of branches which is less than or equal to the
     ## number of records (membershipListSize) because of the different
     ## xRelease variables for each branch
-    k = 0
+    k <- 0L
     ## Initialize countBRM.
-      for(i in 1:membershipListSize) {
-          if(i == 1) {
-              k = k + 1
-              countBRM[k] = strengthArray$oobCT[i]
-          } else {
-              if((strengthArray$nodeID[i] != strengthArray$nodeID[i-1]) || (strengthArray$treeID[i] != strengthArray$treeID[i-1])) {
-                  k = k + 1
-                  countBRM[k] = strengthArray$oobCT[i]
-              }
+    if (membershipListSize > 0L) {
+      for (i in seq_len(membershipListSize)) {
+        if (i == 1L) {
+          k <- k + 1L
+          countBRM[k] <- as.double(strengthArray$oobCT[i])
+        } else {
+          if ((strengthArray$nodeID[i] != strengthArray$nodeID[i - 1L]) ||
+              (strengthArray$treeID[i] != strengthArray$treeID[i - 1L])) {
+            k <- k + 1L
+            countBRM[k] <- as.double(strengthArray$oobCT[i])
           }
+        }
       }
+    }
     ## initialize the branch count vectors
-    countToBRM = cumsum(countBRM)
-    countFromBRM = countToBRM + 1
-    countFromBRM = c(1, countFromBRM)
-    countFromBRM = countFromBRM[-length(countFromBRM)]
+    countToBRM <- cumsum(countBRM)
+    countFromBRM <- if (membershipListSize > 0L) {
+      c(1, head(countToBRM, -1L) + 1)
+    } else {
+      numeric(0)
+    }
     ## create BRM membership list that will contain the BRM
     ## members for each tree, branch, and xReleaseID
     branchMembershipList <- vector("list", length = membershipListSize)
     ## j will count the number of branches
-    j = 0
-    for(i in 1:membershipListSize) {
-      if(i == 1) {
-        j = j + 1
-        if(countToBRM[j] >= countFromBRM[j]) {
-          branchMembershipList[[i]] = nativeOutput$branchMembers[countFromBRM[j]:countToBRM[j]]
-        } else {
-          branchMembershipList[[i]] = list(NULL)
-        }
-      } else {
-        if((strengthArray$nodeID[i] == strengthArray$nodeID[i-1]) && (strengthArray$treeID[i] == strengthArray$treeID[i-1])) {
-          branchMembershipList[[i]] = branchMembershipList[[i - 1]]
-        } else {
-          j = j + 1
-          if(countToBRM[j] >= countFromBRM[j]) {
-            branchMembershipList[[i]] = nativeOutput$branchMembers[countFromBRM[j]:countToBRM[j]]
+    j <- 0L
+    if (membershipListSize > 0L) {
+      n.branch <- length(nativeOutput$branchMembers)
+      if (max(countToBRM, na.rm = TRUE) > n.branch) {
+        stop("Branch membership offsets exceed the length of 'branchMembers'.")
+      }
+      for (i in seq_len(membershipListSize)) {
+        if (i == 1L) {
+          j <- j + 1L
+          if (countToBRM[j] >= countFromBRM[j]) {
+            branchMembershipList[[i]] <- nativeOutput$branchMembers[
+              seq.int(countFromBRM[j], countToBRM[j])
+            ]
           } else {
-            branchMembershipList[[i]] = list(NULL)
+            branchMembershipList[[i]] <- list(NULL)
+          }
+        } else {
+          if ((strengthArray$nodeID[i] == strengthArray$nodeID[i - 1L]) &&
+              (strengthArray$treeID[i] == strengthArray$treeID[i - 1L])) {
+            branchMembershipList[[i]] <- branchMembershipList[[i - 1L]]
+          } else {
+            j <- j + 1L
+            if (countToBRM[j] >= countFromBRM[j]) {
+              branchMembershipList[[i]] <- nativeOutput$branchMembers[
+                seq.int(countFromBRM[j], countToBRM[j])
+              ]
+            } else {
+              branchMembershipList[[i]] <- list(NULL)
+            }
           }
         }
       }
     }
     ## clean up the lists
-    branchMembershipList <- lapply(1:length(branchMembershipList), function(j) {
-      unlist(branchMembershipList[[j]])
-    })
-    compMembershipList <- lapply(1:length(compMembershipList), function(j) {
-      unlist(compMembershipList[[j]])
-    })
+    branchMembershipList <- lapply(branchMembershipList, unlist)
+    compMembershipList <- lapply(compMembershipList, unlist)
   }
   ## return NULL otherwise
   else {

@@ -3,15 +3,21 @@
 \alias{bart.learner}
 \alias{beta.varpro}
 
+\alias{gbm.learner}
+
+
 \alias{get.beta.entropy}
 \alias{get.iso.performance}
 \alias{get.mc.cores}
 \alias{get.orgvimp}
 \alias{get.splitweight.custom}
 \alias{get.topvars}
+\alias{get.varpro.strengthArray}
 \alias{get.vimp}
 
-\alias{gbm.learner}
+\alias{importance.varpro.workhorse}
+
+\alias{local.importance}
 
 \alias{shap.ivarpro}
 

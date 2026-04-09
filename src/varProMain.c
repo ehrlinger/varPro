@@ -21,6 +21,7 @@
 #include "shared/nativeUtil.h"
 #include "shared/sexpIO.h"
 #include "shared/stack.h"
+#include "bootstrapVP.h"
 #include "varProAux.h"
 #include "stackOutput.h"
 #include "treeOps.h"
@@ -152,6 +153,16 @@ char varProMain(char mode, int seedValue) {
                                  &RF_ySizeProxy,
                                  &RF_yIndexZeroSize);
     if (result) {
+      if (RF_startTimeIndex > 0) {
+        stackPreDefinedVP(RF_ntree,
+                          & SG_bootstrapSizeCase,
+                          & SG_bootMembershipFlagCase,
+                          & SG_oobMembershipFlagCase,
+                          & SG_oobSizeCase,
+                          & SG_ibgSizeCase,
+                          & SG_oobMembershipIndexCase,
+                          & SG_ibgMembershipIndexCase);
+      }
       result = stackPreDefinedCommonArrays(mode,
                                            RF_ntree,
                                            RF_subjWeight,
@@ -371,7 +382,9 @@ char varProMain(char mode, int seedValue) {
                                    & RF_totalTermCount);
             if ((RF_optHigh & OPT_MEMB_INCG) || (RF_optHigh & OPT_TERM_INCG)) {
               RF_incomingStackCount = 0;
+              VP_incomingStackCount = 0;
               stackAuxiliaryInfoList(&RF_incomingAuxiliaryInfoList, 8);
+              stackAuxiliaryInfoList(&VP_incomingAuxiliaryInfoList, 4);
               if (RF_optHigh & OPT_MEMB_INCG) {
                 stackTNQualitativeIncoming(mode,
                                            RF_auxDimConsts,
@@ -386,9 +399,22 @@ char varProMain(char mode, int seedValue) {
                                            RF_TN_ACNT_,
                                            &RF_incomingStackCount,
                                            &RF_RMBR_ID_ptr,
-                                           &RF_AMBR_ID_ptr,
+                                           (RF_startTimeIndex == 0) ? &RF_AMBR_ID_ptr : NULL,
                                            &RF_TN_RCNT_ptr,
-                                           &RF_TN_ACNT_ptr);
+                                           (RF_startTimeIndex == 0) ? &RF_TN_ACNT_ptr : NULL);
+                stackTNQualitativeIncomingVPnew(mode,
+                                                RF_auxDimConsts,  
+                                                VP_incomingAuxiliaryInfoList,
+                                                RF_ntree,
+                                                RF_OMBR_ID_,
+                                                RF_IMBR_ID_,
+                                                RF_TN_OCNT_,
+                                                RF_TN_ICNT_,
+                                                &VP_incomingStackCount,
+                                                & VP_OMBR_ID_ptr,
+                                                & VP_IMBR_ID_ptr,
+                                                & VP_TN_OCNT_ptr,
+                                                & VP_TN_ICNT_ptr);
               }
               else {
                 RF_nativeError("\nRF-SRC:  *** ERROR *** ");
@@ -459,34 +485,12 @@ char varProMain(char mode, int seedValue) {
             freeNode = & freeNodeDerived;
             makeTerminal = & makeTerminalDerived;
             freeTerminal = & freeTerminalDerived;
-            stackTNQualitativeIncomingVP(mode,
-                                         RF_tLeafCount_,
-                                         RF_RMBR_ID_,
-                                         RF_OMBR_ID_,
-                                         RF_IMBR_ID_,
-                                         RF_TN_RCNT_,
-                                         RF_TN_OCNT_,
-                                         RF_TN_ICNT_,
-                                         & VP_RMBR_ID_ptr,
-                                         & VP_OMBR_ID_ptr,
-                                         & VP_IMBR_ID_ptr,
-                                         & VP_TN_RCNT_ptr,
-                                         & VP_TN_OCNT_ptr,
-                                         & VP_TN_ICNT_ptr);
 #ifdef _OPENMP
 #pragma omp parallel for num_threads(RF_numThreads)
 #endif
             for (b = 1; b <= VP_strengthTreeCount; b++) {
               acquireTree(mode, b);
             }
-            unstackTNQualitativeIncomingVP(mode,
-                                           RF_tLeafCount_,
-                                           VP_RMBR_ID_ptr,
-                                           VP_OMBR_ID_ptr,
-                                           VP_IMBR_ID_ptr,
-                                           VP_TN_RCNT_ptr,
-                                           VP_TN_OCNT_ptr,
-                                           VP_TN_ICNT_ptr);
             if ((RF_timeIndex > 0) && (RF_statusIndex > 0)) {
               RF_stackCount = 9;
               if (!(VP_opt & (VP_OPT_CMP | VP_OPT_OOB))) {
@@ -588,8 +592,8 @@ char varProMain(char mode, int seedValue) {
             for(b = 1; b <= VP_strengthTreeCount; b++) {
               VP_strengthTreeID_[b] = VP_strengthTreeID[b];
             }
-            uint localSize;
-            uint membershipSize;
+            ulong localSize;
+            uint  membershipSize;
             if (mode == RF_PRED) {
               localSize = VP_strengthTreeCount * RF_fobservationSize;
               VP_testCaseNodeID_ = (uint*) stackAndProtect(RF_auxDimConsts,
@@ -1043,6 +1047,7 @@ char varProMain(char mode, int seedValue) {
             unstackAuxiliaryInfoAndList(RF_auxDimConsts, TRUE, RF_snpAuxiliaryInfoList, RF_stackCount);
             if ((RF_optHigh & OPT_MEMB_INCG) || (RF_optHigh & OPT_TERM_INCG)) {
               unstackAuxiliaryInfoAndList(RF_auxDimConsts, FALSE, RF_incomingAuxiliaryInfoList, 8);
+              unstackAuxiliaryInfoAndList(RF_auxDimConsts, FALSE, VP_incomingAuxiliaryInfoList, 4);
             }
             freeAuxDimConsts(RF_auxDimConsts);
             if (RF_rFactorCount > 0) {
@@ -1174,6 +1179,16 @@ char varProMain(char mode, int seedValue) {
                                     RF_subjWeightSorted,
                                     RF_identityMembershipIndexSize,
                                     RF_identityMembershipIndex);
+        if (RF_startTimeIndex > 0) {
+          unstackPreDefinedVP(RF_ntree,
+                              SG_bootstrapSizeCase,
+                              SG_bootMembershipFlagCase,
+                              SG_oobMembershipFlagCase,
+                              SG_oobSizeCase,
+                              SG_ibgSizeCase,
+                              SG_oobMembershipIndexCase,
+                              SG_ibgMembershipIndexCase);
+        }
     }
     unstackIncomingArrays(mode,
                           RF_ySize,

@@ -29,6 +29,7 @@ SEXP varProStrength(SEXP traceFlag,
                     SEXP yInfo,
                     SEXP yLevels,
                     SEXP yData,
+                    SEXP wirData,
                     SEXP xInfo,
                     SEXP xLevels,
                     SEXP xData,
@@ -78,47 +79,61 @@ SEXP varProStrength(SEXP traceFlag,
   VP_opt                  = INTEGER(optVarPro)[0];
   RF_ntree                = INTEGER(ntree)[0];
   RF_observationSize      = INTEGER(observationSize)[0];
-  RF_ySize                = INTEGER(VECTOR_ELT(yInfo, 0))[0];
-  if(VECTOR_ELT(yInfo, 1) != R_NilValue) {
-    RF_rType = (char *) copy1DObject(VECTOR_ELT(yInfo, 1), NATIVE_TYPE_CHARACTER, RF_ySize, TRUE);
-  }
-  else {
-    RF_rType = NULL;
-  }
-  if(VECTOR_ELT(yInfo, 2) != R_NilValue) {
-    RF_rLevelsMax         = (uint *) INTEGER(VECTOR_ELT(yInfo, 2)); RF_rLevelsMax--;
-  }
-  else {
-    RF_rLevelsMax         = NULL;
-  }
-  if(VECTOR_ELT(yInfo, 3) != R_NilValue) {
-    RF_rLevelsCnt         = (uint *) INTEGER(VECTOR_ELT(yInfo, 3)); RF_rLevelsCnt--;
-  }
-  else {
-    RF_rLevelsCnt = NULL;
-  }
-  if(VECTOR_ELT(yInfo, 4) != R_NilValue) {
-    RF_subjIn             =  (uint *) INTEGER(VECTOR_ELT(yInfo, 4));  RF_subjIn --;
-  }
-  else {
-    RF_subjIn             = NULL;
-  }
-  if(VECTOR_ELT(yInfo, 5) != R_NilValue) {
-    RF_eventTypeSize      =  INTEGER(VECTOR_ELT(yInfo, 5))[0];
-  }
-  else {
-    RF_eventTypeSize      = 0;
-  }
-  if(VECTOR_ELT(yInfo, 6) != R_NilValue) {
-    if (RF_eventTypeSize > 0) {
-      RF_eventType        =  (uint *) INTEGER(VECTOR_ELT(yInfo, 6));  RF_eventType --;
+  RF_ySize = 0;
+  RF_rType = NULL;
+  RF_rLevelsMax = NULL;
+  RF_rLevelsCnt = NULL;
+  RF_subjIn = NULL;
+  RF_eventTypeSize = 0;
+  RF_eventType = NULL;
+  if (!Rf_isNull(yInfo)) {
+    if(VECTOR_ELT(yInfo, 0) != R_NilValue) {  
+      RF_ySize                = INTEGER(VECTOR_ELT(yInfo, 0))[0];
     }
     else {
-      RF_eventType        = NULL;
+      RF_ySize = 0;
     }
-  }
-  else {
-    RF_eventType          = NULL;
+    if(VECTOR_ELT(yInfo, 1) != R_NilValue) {
+      RF_rType = (char *) copy1DObject(VECTOR_ELT(yInfo, 1), NATIVE_TYPE_CHARACTER, RF_ySize, TRUE);
+    }
+    else {
+      RF_rType = NULL;
+    }
+    if(VECTOR_ELT(yInfo, 2) != R_NilValue) {
+      RF_rLevelsMax         = (uint *) INTEGER(VECTOR_ELT(yInfo, 2)); RF_rLevelsMax--;
+    }
+    else {
+      RF_rLevelsMax         = NULL;
+    }
+    if(VECTOR_ELT(yInfo, 3) != R_NilValue) {
+      RF_rLevelsCnt         = (uint *) INTEGER(VECTOR_ELT(yInfo, 3)); RF_rLevelsCnt--;
+    }
+    else {
+      RF_rLevelsCnt = NULL;
+    }
+    if(VECTOR_ELT(yInfo, 4) != R_NilValue) {
+      RF_subjIn             =  (uint *) INTEGER(VECTOR_ELT(yInfo, 4));  RF_subjIn --;
+    }
+    else {
+      RF_subjIn             = NULL;
+    }
+    if(VECTOR_ELT(yInfo, 5) != R_NilValue) {
+      RF_eventTypeSize      =  INTEGER(VECTOR_ELT(yInfo, 5))[0];
+    }
+    else {
+      RF_eventTypeSize      = 0;
+    }
+    if(VECTOR_ELT(yInfo, 6) != R_NilValue) {
+      if (RF_eventTypeSize > 0) {
+        RF_eventType        =  (uint *) INTEGER(VECTOR_ELT(yInfo, 6));  RF_eventType --;
+      }
+      else {
+        RF_eventType        = NULL;
+      }
+    }
+    else {
+      RF_eventType          = NULL;
+    }
   }
   RF_rLevelsSEXP = yLevels;
   RF_rLevels = NULL;
@@ -127,6 +142,11 @@ SEXP varProStrength(SEXP traceFlag,
   }
   else {
     RF_responseIn = NULL;
+  }
+  VP_wir_ = NULL;
+  if (!Rf_isNull(wirData)) {
+    VP_wir_ = REAL(wirData);
+    VP_wir_ --;
   }
   RF_xSize                 = INTEGER(VECTOR_ELT(xInfo, 0))[0];
   if(VECTOR_ELT(xInfo, 1) != R_NilValue) {
@@ -221,15 +241,26 @@ SEXP varProStrength(SEXP traceFlag,
   RF_nodeSZ_              = (uint *) INTEGER(nodeSZ);   RF_nodeSZ_ --;
   RF_brnodeID_            = (uint *) INTEGER(brnodeID); RF_brnodeID_ --;
   RF_RMBR_ID_             = (uint *) INTEGER(tnRMBR);
-  RF_AMBR_ID_             = (uint *) INTEGER(tnAMBR);
   RF_OMBR_ID_             = (uint *) INTEGER(tnOMBR);
   RF_IMBR_ID_             = (uint *) INTEGER(tnIMBR);  
   RF_TN_RCNT_             = (uint *) INTEGER(tnRCNT);
-  RF_TN_ACNT_             = (uint *) INTEGER(tnACNT);
   RF_TN_OCNT_             = (uint *) INTEGER(tnOCNT);
   RF_TN_ICNT_             = (uint *) INTEGER(tnICNT);
-  RF_OOB_SZ_              = (uint *) INTEGER(oobSZ);  RF_OOB_SZ_ --;
-  RF_IBG_SZ_              = (uint *) INTEGER(ibgSZ);  RF_IBG_SZ_ --;
+  RF_AMBR_ID_ = NULL;  
+  RF_TN_ACNT_ = NULL;
+  if (tnAMBR != R_NilValue) {    
+    RF_AMBR_ID_             = (uint *) INTEGER(tnAMBR);
+  }
+  if (tnACNT != R_NilValue) {      
+    RF_TN_ACNT_             = (uint *) INTEGER(tnACNT);
+  }
+  RF_OOB_SZ_ = RF_IBG_SZ_ = NULL;
+  if (oobSZ != R_NilValue) {
+    RF_OOB_SZ_              = (uint *) INTEGER(oobSZ);  RF_OOB_SZ_ --;
+  }
+  if (ibgSZ != R_NilValue) {
+    RF_IBG_SZ_              = (uint *) INTEGER(ibgSZ);  RF_IBG_SZ_ --;
+  }
   RF_quantileSize = 0;
   RF_quantile = NULL;
   RF_qEpsilon = 0;
@@ -246,13 +277,16 @@ SEXP varProStrength(SEXP traceFlag,
   RF_intrPredictorSize = 0;
   RF_intrPredictor = NULL;
   RF_getTree = (uint *) INTEGER(getTree);  RF_getTree --;
-  RF_TN_SURV_ = REAL(tnSURV);
-  RF_TN_MORT_ = REAL(tnMORT);
-  RF_TN_NLSN_ = REAL(tnNLSN);
-  RF_TN_CSHZ_ = REAL(tnCSHZ);
-  RF_TN_CIFN_ = REAL(tnCIFN);
-  RF_TN_REGR_ = REAL(tnREGR);  
-  RF_TN_CLAS_ = (uint *) INTEGER(tnCLAS);
+  RF_TN_SURV_ = RF_TN_MORT_ = RF_TN_NLSN_ = RF_TN_CSHZ_ = RF_TN_CIFN_ = NULL;
+  RF_TN_REGR_ = NULL;
+  RF_TN_CLAS_ = NULL;
+  if (tnSURV != R_NilValue) RF_TN_SURV_ = REAL(tnSURV);
+  if (tnMORT != R_NilValue) RF_TN_MORT_ = REAL(tnMORT);
+  if (tnNLSN != R_NilValue) RF_TN_NLSN_ = REAL(tnNLSN);
+  if (tnCSHZ != R_NilValue) RF_TN_CSHZ_ = REAL(tnCSHZ);
+  if (tnCIFN != R_NilValue) RF_TN_CIFN_ = REAL(tnCIFN);
+  if (tnREGR != R_NilValue) RF_TN_REGR_ = REAL(tnREGR);
+  if (tnCLAS != R_NilValue) RF_TN_CLAS_ = (uint *) INTEGER(tnCLAS);
   VP_maxRulesTree = INTEGER(maxRulesTree)[0];
   VP_maxTree = INTEGER(maxTree)[0];
   stackForestObjectsAuxOnly(mode,

@@ -29,7 +29,9 @@ void *makeTerminalDerived(void) {
   parent -> complementMCP      = NULL;
   parent -> oobMCP             = NULL;
   parent -> complementMortality = NULL;
-  parent -> oobMortality        = 0;
+  parent -> oobMortality        = RF_nativeNaN;
+  parent -> compWirResponse = NULL;
+  parent -> oobWirResponse  = RF_nativeNaN;
   parent -> repMembrCount = 0;
   parent -> oobMembrCount = 0;
   parent -> ibgMembrCount = 0;
@@ -52,6 +54,7 @@ void freeTerminalDerived(void *parent) {
   else if(((TerminalBase *) parent) -> classificationBase != NULL) {
     unstackMultiClassTerm((Terminal *) parent);
   }
+  unstackWirTerm((Terminal *) parent);  
   deinitTerminalBase((TerminalBase*) parent);
   if (((Terminal *) parent) -> testMembrCount > 0) {
     free_uivector(((Terminal *) parent) -> testMembrIndx, 1, ((Terminal *) parent) -> testMembrCount);
@@ -229,6 +232,27 @@ void unstackMortalityTerm(Terminal *tTerm) {
       free_dvector(tTerm -> complementMortality, 1, tTerm -> xReleaseCount);
       tTerm -> complementMortality = NULL;
     }
+  }
+}
+void stackCompWirOuter(Terminal *tTerm, unsigned int xReleaseCount) {
+  if (tTerm->xReleaseCount > 0) {
+    if (tTerm->xReleaseCount != xReleaseCount) {
+      RF_nativeError("\nRF-SRC:  *** ERROR *** ");
+      RF_nativeError("\nRF-SRC:  xReleaseCount has been previously defined:  %10d vs %10d",
+                     tTerm->xReleaseCount, xReleaseCount);
+      RF_nativeError("\nRF-SRC:  Please Contact Technical Support.");
+      RF_nativeExit();
+    }
+  }
+  else {
+    tTerm->xReleaseCount = xReleaseCount;
+  }
+  tTerm -> compWirResponse = dvector(1, xReleaseCount);
+}
+void unstackWirTerm(Terminal *tTerm) {
+  if (tTerm->compWirResponse != NULL) {
+    free_dvector(tTerm->compWirResponse, 1, tTerm->xReleaseCount);
+    tTerm->compWirResponse = NULL;
   }
 }
 void restoreTerminalNodeOutcomesVarPro(uint treeID, Terminal *term) {

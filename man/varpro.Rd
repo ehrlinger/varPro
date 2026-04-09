@@ -148,12 +148,26 @@ can be overridden via the hidden option \code{use.rfq}.
 }
 
 \references{
+
+  Ishwaran H. (2025). \emph{Multivariate Statistics: Classical Foundations and
+  Modern Machine Learning}.  Chapman and Hall/CRC.
+
+  Ishwaran H. and Blackstone E.H. (2025).  Harnessing the power of
+  virtual (digital) twins: Graphical causal tools for understanding
+  patient and hospital differences. \emph{Computational and Structural
+    Biotechnology Journal}, 28:312.
+  
   Lu, M. and Ishwaran, H. (2024). Model-independent variable selection
   via the rule-based variable priority. arXiv e-prints, pp.arXiv-2409.
 
-  O'Brien R. and Ishwaran H. (2019).  A random forests quantile
-  classifier for class imbalanced data. \emph{Pattern Recognition},
-  90, 232-249.
+  Lu, M. and Ishwaran, H. (2025). Individual variable priority: a
+  model-independent local gradient method for variable importance.
+  \emph{Artificial Intelligence Review}, 58:407.
+  
+  Zhou L., Lu M. and Ishwaran H. (2026).  Variable priority for
+  unsupervised variable selection.  \emph{Pattern Recognition},
+  172:112727.
+
 }
 
 \seealso{

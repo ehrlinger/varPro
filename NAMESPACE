@@ -30,7 +30,7 @@ importFrom("stats", "as.formula", "coef", "median", "qnorm",
 
 importFrom("survival", "survdiff", "Surv")
 
-importFrom("utils", "combn", "capture.output")
+importFrom("utils", "combn", "capture.output", "head", "tail")
 
 
 
@@ -38,18 +38,21 @@ export(
   bart.learner,
   beta.varpro,
   cv.varpro,
+  gbm.learner,
   get.beta.entropy,
   get.iso.performance,
   get.mc.cores,
   get.orgvimp,
   get.splitweight.custom,
   get.topvars,
+  get.varpro.strengthArray,
   get.vimp,
-  gbm.learner,
   importance,
   importance.varpro,
-  ivarpro,
+  importance.varpro.workhorse,
   isopro,
+  ivarpro,
+  local.importance,
   outpro,
   outpro.null,
   predict.isopro,

@@ -33,6 +33,7 @@ void acquireTree(char mode, uint b) {
   uint  treeID;
   uint  rmbrIterator;
   uint  ambrIterator;
+  uint  gmbrIterator;
   uint *bootMembrIndx;
   uint  bootMembrSize;
   char  bootResult;
@@ -77,8 +78,8 @@ void acquireTree(char mode, uint b) {
   bootResult = bootstrap (mode,
                           treeID,
                           rootBase, 
-                          rootBase -> allMembrIndx,
-                          rootBase -> allMembrSize,
+                          RF_identityMembershipIndex, 
+                          (RF_startTimeIndex == 0) ? RF_observationSize : RF_subjCount,  
                           bootMembrSize,
                           RF_bootstrapIn,
                           RF_subjSize,
@@ -97,44 +98,139 @@ void acquireTree(char mode, uint b) {
                           RF_oobMembershipIndex,
                           RF_BOOT_CT_ptr);
   if (bootResult) {
-    rootBase -> repMembrIndx = bootMembrIndx;
-    rootBase -> repMembrSize = rootBase -> repMembrSizeAlloc = bootMembrSize;
+    if (RF_startTimeIndex == 0) {
+      rootBase -> repMembrSizeAlloc = rootBase -> repMembrSize = bootMembrSize;
+      rootBase -> repMembrIndx = uivector(1, rootBase -> repMembrSizeAlloc);
+      for (i = 1; i <= bootMembrSize; i++) {
+        rootBase -> repMembrIndx[i] = bootMembrIndx[i];
+      }
+    }
+    else {
+      rootBase -> repMembrSizeAlloc = 0;
+      for (i = 1; i <= bootMembrSize; i++) {
+        k = bootMembrIndx[i];
+        rootBase -> repMembrSizeAlloc += RF_subjSlotCount[k];
+      }
+      rootBase -> repMembrIndx = uivector(1, rootBase -> repMembrSizeAlloc);
+      rootBase -> repMembrSize = 0;
+      for (i = 1; i <= bootMembrSize; i++) {
+        k = bootMembrIndx[i];
+        for (j = 1; j <= RF_subjSlotCount[k]; j++) {
+          rootBase -> repMembrIndx[++(rootBase -> repMembrSize)] = RF_subjList[k][j];
+        }
+      }
+      SG_bootstrapSizeCase[treeID] = rootBase -> repMembrSize;
+      SG_bootMembershipFlagCase[treeID] = cvector(1, nSize);
+      SG_oobMembershipFlagCase[treeID] = cvector(1, nSize);
+      for (i = 1; i <= nSize; i++) {
+        SG_bootMembershipFlagCase[treeID][i]  = FALSE;
+        SG_oobMembershipFlagCase[treeID][i]   = TRUE;
+      }
+      SG_ibgMembershipIndexCase[treeID] = uivector(1, nSize);
+      SG_oobMembershipIndexCase[treeID] = uivector(1, nSize);
+      for (i = 1; i <= rootBase -> repMembrSize; i++) {
+        SG_bootMembershipFlagCase[treeID][rootBase -> repMembrIndx[i]] =  TRUE;
+        SG_oobMembershipFlagCase[treeID][rootBase -> repMembrIndx[i]] =  FALSE;
+      }
+      SG_oobSizeCase[treeID] = 0;
+      SG_ibgSizeCase[treeID] = 0;
+      for (i = 1; i <= nSize; i++) {
+        if (SG_bootMembershipFlagCase[treeID][i] == FALSE) {
+          SG_oobMembershipIndexCase[treeID][++SG_oobSizeCase[treeID]] = i;
+        }
+        else {
+          SG_ibgMembershipIndexCase[treeID][++SG_ibgSizeCase[treeID]] = i;
+        }
+      }
+      if (RF_OOB_SZ_[treeID] != SG_oobSizeCase[treeID]) {
+        RF_nativeError("\nRF-SRC:  *** ERROR *** ");
+        RF_nativeError("\nRF-SRC:  OOB terminal qualitative and RHF calculated size mismatch in tree %10d:  OOB_SZ=%10d  oobSize=%10d",
+                       treeID, RF_OOB_SZ_[treeID], SG_oobSizeCase[treeID]);
+        RF_nativeExit();
+      }
+      if (RF_OOB_SZ_[treeID] != SG_oobSizeCase[treeID]) {
+        RF_nativeError("\nRF-SRC:  *** ERROR *** ");
+        RF_nativeError("\nRF-SRC:  IBG terminal qualitative and RHF calculated size mismatch in tree %10d:  IBG_SZ=%10d  ibgSize=%10d",
+                       treeID, RF_IBG_SZ_[treeID], SG_ibgSizeCase[treeID]);
+        RF_nativeExit();
+      }
+    }
     restoreTree(mode, treeID, RF_root[treeID]);
     if (RF_optHigh & OPT_MEMB_INCG) {
-      ambrIterator = 0;
-      leafLinkedObjectPtr = RF_leafLinkedObjHead[treeID];
-      for(i = 1; i <= RF_tLeafCount_[treeID]; i++) {
-        leafLinkedObjectPtr = leafLinkedObjectPtr -> fwdLink;
-        assignTerminalNodeMembership(mode,
-                                     treeID,
-                                     leafLinkedObjectPtr -> termPtr,
-                                     RF_AMBR_ID_ptr[treeID],
-                                     RF_TN_ACNT_ptr[treeID][((TerminalBase*) leafLinkedObjectPtr -> termPtr) -> nodeID],
-                                     &ambrIterator,
-                                     RF_tTermMembership);
+      uint *oobNodeOffset;
+      uint *ibgNodeOffset;
+      Terminal *termPtr;
+      uint leafID;
+      uint oobOffset;
+      uint ibgOffset;
+      oobNodeOffset = uivector(1, RF_tLeafCount_[treeID]);
+      ibgNodeOffset = uivector(1, RF_tLeafCount_[treeID]);
+      oobOffset = 0;
+      ibgOffset = 0;
+      for (i = 1; i <= RF_tLeafCount_[treeID]; i++) {
+        oobNodeOffset[i] = oobOffset;
+        ibgNodeOffset[i] = ibgOffset;
+        oobOffset += VP_TN_OCNT_ptr[treeID][i];
+        ibgOffset += VP_TN_ICNT_ptr[treeID][i];
+      }
+      if ((RF_OOB_SZ_ != NULL) && (oobOffset != RF_OOB_SZ_[treeID])) {
+        RF_nativeError("\nRF-SRC:  *** ERROR *** ");
+        RF_nativeError("\nRF-SRC:  OOB offset mismatch in tree %10d:  offset=%10d  oobSZ=%10d",
+                       treeID, oobOffset, RF_OOB_SZ_[treeID]);
+        RF_nativeExit();
+      }
+      if ((RF_IBG_SZ_ != NULL) && (ibgOffset != RF_IBG_SZ_[treeID])) {
+        RF_nativeError("\nRF-SRC:  *** ERROR *** ");
+        RF_nativeError("\nRF-SRC:  IBG offset mismatch in tree %10d:  offset=%10d  ibgSZ=%10d",
+                       treeID, ibgOffset, RF_IBG_SZ_[treeID]);
+        RF_nativeExit();
       }
       rmbrIterator = 0;
       ambrIterator = 0;
       leafLinkedObjectPtr = RF_leafLinkedObjHead[treeID];
-      Terminal *termPtr;
       for(i = 1; i <= RF_tLeafCount_[treeID]; i++) {
         leafLinkedObjectPtr = leafLinkedObjectPtr -> fwdLink;
         termPtr = (Terminal *) (leafLinkedObjectPtr -> termPtr);
-        termPtr -> allMembrCount = RF_TN_ACNT_ptr[treeID][(leafLinkedObjectPtr -> termPtr) -> nodeID];
-        termPtr -> allMembrIndx  = RF_AMBR_ID_ptr[treeID] + ambrIterator;
-        termPtr -> repMembrCount = RF_TN_RCNT_ptr[treeID][(leafLinkedObjectPtr -> termPtr) -> nodeID];
+        leafID = ((TerminalBase *) termPtr) -> nodeID;
+        termPtr -> repMembrCount = RF_TN_RCNT_ptr[treeID][leafID];
         termPtr -> repMembrIndx  = RF_RMBR_ID_ptr[treeID] + rmbrIterator;
+        termPtr -> oobMembrCount = VP_TN_OCNT_ptr[treeID][leafID];
+        termPtr -> oobMembrIndx  = (termPtr -> oobMembrCount > 0) ?
+          (VP_OMBR_ID_ptr[treeID] + oobNodeOffset[leafID]) : NULL;
+        termPtr -> ibgMembrCount = VP_TN_ICNT_ptr[treeID][leafID];
+        termPtr -> ibgMembrIndx  = (termPtr -> ibgMembrCount > 0) ?
+          (VP_IMBR_ID_ptr[treeID] + ibgNodeOffset[leafID]) : NULL;
         rmbrIterator += (termPtr -> repMembrCount);
         ambrIterator += (termPtr -> allMembrCount);
-        termPtr -> oobMembrCount = VP_TN_OCNT_ptr[treeID][((TerminalBase *) termPtr) -> nodeID];
-        termPtr -> oobMembrIndx  = VP_OMBR_ID_ptr[treeID][((TerminalBase *) termPtr) -> nodeID];
-        termPtr -> ibgMembrCount = VP_TN_ICNT_ptr[treeID][((TerminalBase *) termPtr) -> nodeID];
-        termPtr -> ibgMembrIndx  = VP_IMBR_ID_ptr[treeID][((TerminalBase *) termPtr) -> nodeID];
       }
+      gmbrIterator = 0;
+      leafLinkedObjectPtr = RF_leafLinkedObjHead[treeID];
+      for(i = 1; i <= RF_tLeafCount_[treeID]; i++) {
+        leafLinkedObjectPtr = leafLinkedObjectPtr -> fwdLink;
+        termPtr = (Terminal *) (leafLinkedObjectPtr -> termPtr);
+        leafID = ((TerminalBase *) termPtr) -> nodeID;
+        gmbrIterator = 0;
+        assignTerminalNodeMembership(mode,
+                                     treeID,
+                                     leafLinkedObjectPtr -> termPtr,
+                                     termPtr -> ibgMembrIndx,
+                                     termPtr -> ibgMembrCount,
+                                     &gmbrIterator,
+                                     RF_tTermMembership);
+        gmbrIterator = 0;
+        assignTerminalNodeMembership(mode,
+                                     treeID,
+                                     leafLinkedObjectPtr -> termPtr,
+                                     termPtr -> oobMembrIndx,
+                                     termPtr -> oobMembrCount,
+                                     &gmbrIterator,
+                                     RF_tTermMembership);
+      }
+      free_uivector(oobNodeOffset, 1, RF_tLeafCount_[treeID]);
+      free_uivector(ibgNodeOffset, 1, RF_tLeafCount_[treeID]);      
     }
     if (VP_opt & ((VP_OPT_CMP | VP_OPT_OOB))) {
       if (RF_optHigh & OPT_TERM_INCG) {
-        ambrIterator = 0;
         leafLinkedObjectPtr = RF_leafLinkedObjHead[treeID];
         for(i = 1; i <= RF_tLeafCount_[treeID]; i++) {
           leafLinkedObjectPtr = leafLinkedObjectPtr -> fwdLink;
@@ -275,15 +371,29 @@ void acquireTree(char mode, uint b) {
       uint  subsetSize;
       if (VP_opt & VP_OPT_IBG) {
         xArray = RF_observation[treeID];
-        membrIndexStatic = RF_ibgMembershipIndex[treeID];
-        membrIndex = RF_ibgMembershipIndex[treeID];
-        subsetSize = RF_ibgSize[treeID];
+        if (RF_startTimeIndex == 0) {
+          membrIndexStatic = RF_ibgMembershipIndex[treeID];
+          membrIndex       = RF_ibgMembershipIndex[treeID];
+          subsetSize       = RF_ibgSize[treeID];
+        }
+        else {
+          membrIndexStatic = SG_ibgMembershipIndexCase[treeID];
+          membrIndex       = SG_ibgMembershipIndexCase[treeID];
+          subsetSize       = SG_ibgSizeCase[treeID];
+        }
       }
       else {
         xArray = RF_observation[treeID];
-        membrIndexStatic = RF_oobMembershipIndex[treeID];
-        membrIndex = RF_oobMembershipIndex[treeID];
-        subsetSize = RF_oobSize[treeID];
+        if (RF_startTimeIndex == 0) {
+          membrIndexStatic = RF_oobMembershipIndex[treeID];
+          membrIndex       = RF_oobMembershipIndex[treeID];
+          subsetSize       = RF_oobSize[treeID];
+        }
+        else {
+          membrIndexStatic = SG_oobMembershipIndexCase[treeID];
+          membrIndex       = SG_oobMembershipIndexCase[treeID];
+          subsetSize       = SG_oobSizeCase[treeID];
+        }
       }
       for(k = 1; k <= VP_xReleaseCount[b][j]; k++) {
         uint *membershipReleased;
@@ -399,12 +509,16 @@ void acquireTree(char mode, uint b) {
     }
     free_new_vvector(pathPolarity, 1, branchCount, NRUTIL_CPTR);
     free_new_vvector(releaseFlag, 1, branchCount, NRUTIL_CPTR);
+    if (RF_startTimeIndex > 0) {
+      free_cvector(SG_bootMembershipFlagCase[treeID], 1, nSize);
+      free_cvector(SG_oobMembershipFlagCase[treeID], 1, nSize);
+      free_uivector(SG_oobMembershipIndexCase[treeID], 1, nSize);
+      free_uivector(SG_ibgMembershipIndexCase[treeID], 1, nSize);
+    }
   }
   else {
   }
   free_uivector(bootMembrIndx, 1, bootMembrSize);
-  rootBase -> repMembrIndx = NULL;
-  rootBase -> repMembrSize = rootBase -> repMembrSizeAlloc = 0;
   unstackMembershipVectors(nSize,
                            RF_bootMembershipFlag[treeID],
                            RF_oobMembershipFlag[treeID],
@@ -433,7 +547,18 @@ void acquireProxyIndv(char  mode,
                       uint **branchMembers) {
   uint  i;
   Terminal *termPtr = (Terminal *) RF_tTermList[treeID][branchID];
-  *indv = termPtr -> allMembrIndx[1];
+  if (termPtr -> ibgMembrIndx != NULL) {
+    *indv = termPtr -> ibgMembrIndx[1];
+  }
+  else if (termPtr -> oobMembrIndx != NULL) {
+    *indv = termPtr -> oobMembrIndx[1];
+  }
+  else {
+        RF_nativeError("\nRF-SRC:  *** ERROR *** ");
+        RF_nativeError("\nRF-SRC:  IBG and OOB proxy member not found for (treeID, branchID, termID) = (%10d, %10d %10d)",
+                       treeID, branchID, RF_tTermList[treeID][branchID] -> nodeID);
+        RF_nativeExit();
+  }
   *indvDepth = ((TerminalBase *) termPtr) -> mate -> depth;
   *branchMemberCount = 0;
   if (VP_opt & VP_OPT_IBG) {

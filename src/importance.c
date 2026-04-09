@@ -174,3 +174,28 @@ void getMortality(uint       treeID,
     unstackEventTimeIndex(tSurvBase);
   }
 }
+void getWirMeanResponse(uint       treeID,
+                        Terminal  *parent,
+                        uint      *membershipIndex,
+                        uint       membershipSize,
+                        uint       xReleaseIndx,
+                        char       oob) {
+  uint i;
+  double mean;
+  if (membershipSize == 0) {
+    mean = RF_nativeNaN;
+  }
+  else {
+    mean = 0.0;
+    for (i = 1; i <= membershipSize; i++) {
+      mean += VP_wir_[membershipIndex[i]];
+    }
+    mean = mean / ((double) membershipSize);
+  }
+  if(oob) {
+    parent -> oobWirResponse = mean;
+  }
+  else {
+    (parent -> compWirResponse[xReleaseIndx]) = mean;
+  }
+}

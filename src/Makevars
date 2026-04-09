@@ -1,15 +1,15 @@
 ## Use R's portable OpenMP flags (do NOT hard-code -fopenmp etc.)
 PKG_CFLAGS = $(SHLIB_OPENMP_CFLAGS)
-PKG_LIBS   = $(SHLIB_OPENMP_CFLAGS) $(SHLIB_OPENMP_LIBS)
+PKG_LIBS   = $(SHLIB_OPENMP_CFLAGS) 
 
-## If you have headers in src/shared, make sure the compiler sees them
-PKG_CPPFLAGS = -I$(srcdir)/shared
+PKG_CPPFLAGS = -Ishared
 
 ## C sources in src/
 SRCS_MAIN = \
   R_init_varPro.c \
-  entry.c entryGeneric.c importance.c internal.c nodeOps.c sexpOutgoing.c \
-  stackOutput.c survivalUtil.c termOps.c treeOps.c varProAux.c varProMain.c
+  entry.c entryGeneric.c bootstrapVP.c importance.c internal.c \
+  nodeOps.c sexpOutgoing.c stackOutput.c survivalUtil.c termOps.c \
+  treeOps.c varProAux.c varProMain.c
 
 ## C sources in src/shared/
 SRCS_SHARED = \

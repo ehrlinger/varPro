@@ -19,4 +19,10 @@ void getMortality(uint       treeID,
                   uint       membershipSize,
                   uint       xReleaseIndx,
                   char       oob);
+void getWirMeanResponse(uint       treeID,
+                        Terminal  *parent,
+                        uint      *membershipIndex,
+                        uint       membershipSize,
+                        uint       xReleaseIndx,
+                        char       oob);
 #endif

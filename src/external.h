@@ -3,6 +3,7 @@
 #define RF_EXTERNAL_H
 
 #include "shared/globalCore.h"
+#include "shared/snpAuxiliaryInfo.h"
 #include "shared/leafLink.h"
 extern uint    *VP_treeID_;
 extern uint    *VP_nodeID_;
@@ -39,14 +40,22 @@ extern uint  ***VP_branchMembers;
 extern uint  ****VP_complementMembers;
 extern uint   **VP_proxyIndv;
 extern uint   **VP_proxyIndvDepth;
-extern uint ***VP_RMBR_ID_ptr;
-extern uint ***VP_OMBR_ID_ptr;
-extern uint ***VP_IMBR_ID_ptr;
-extern uint  **VP_TN_RCNT_ptr;
+extern SNPAuxiliaryInfo **VP_incomingAuxiliaryInfoList;
+extern uint VP_incomingStackCount;
+extern uint  **VP_OMBR_ID_ptr;
+extern uint  **VP_IMBR_ID_ptr;
 extern uint  **VP_TN_OCNT_ptr;
 extern uint  **VP_TN_ICNT_ptr;
+extern uint    *SG_bootstrapSizeCase;
+extern char    **SG_bootMembershipFlagCase;
+extern char    **SG_oobMembershipFlagCase;
+extern uint     *SG_oobSizeCase;
+extern uint     *SG_ibgSizeCase;
+extern uint    **SG_oobMembershipIndexCase;
+extern uint    **SG_ibgMembershipIndexCase;
 extern double   *VP_cpuTime_;
-extern uint   VP_totalRecordCount;
+extern ulong     VP_totalRecordCount;
+extern double   *VP_wir_;
 extern uint      VP_maxRulesTree;
 extern uint      VP_maxTree;
 extern uint      VP_neighbourSize;

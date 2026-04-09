@@ -21,37 +21,69 @@ importance.varpro <- function(o, local.std = TRUE, y.external = NULL,
   ## coherence of incoming object 
   ##
   ## ------------------------------------------------------------------------
-  if (!(inherits(o, "varpro") || inherits(o, "uvarpro"))) {
-    stop("this function only works for varpro, uvarpro objects")
+  if (!(inherits(o, "varpro") || inherits(o, "uvarpro") || inherits(o, "rhf"))) {
+    stop("this function only works for varpro, uvarpro, or rhf objects")
   }
+  ## uvarpro adjustment
   if (inherits(o, "uvarpro")) {
     local.std <- FALSE
     y.external <- NULL
   }
-  ## importance() is optimized for serial execution:
-  ## - PSOCK has high serialization overhead for these tasks
-  ## - fork-based mclapply can be unsafe after OpenMP (e.g. rfsrc) on macOS
-  ## Keep the papply argument for legacy API compatibility, but run serial here.
+  ## rhf adjustment
+  if (inherits(o, "rhf")) {
+    local.std <- TRUE
+    ## we allow y.external but this is dangerous
+  }
+  ## Keep papply for legacy API compatibility, but run serial here.
   papply <- lapply
   ## ------------------------------------------------------------------------
   ##
   ## call varpro.strength?
-  ## applies under various settings
+  ## applies to many settings, including rhf
   ##
   ## ------------------------------------------------------------------------
   if (local.std || !is.null(y.external) || (!missing(max.rules.tree) || !missing(max.tree))) {
-    ## update varpro parameters if they are supplied
-    if (missing(max.rules.tree)) {
-      max.rules.tree <- o$max.rules.tree
+    ## get result array: split into rhf versus everything else
+    ## rhf case: mod this into a regression case
+    rhf.max.tree <- 150
+    rhf.max.rules.tree <- 150
+    eps <- 1e-6
+    if (inherits(o, "rhf")) {
+      if (missing(max.rules.tree)) {
+        max.rules.tree <- rhf.max.rules.tree
+      }
+      if (missing(max.tree)) {
+        max.tree <- min(rhf.max.tree, o$ntree)
+      }
+      ## acquire membership
+      oo <- varpro.strength(object = o,
+                            max.rules.tree = max.rules.tree,
+                            max.tree = max.tree,
+                            membership = TRUE)
+      ## add a column entry for importance - initialize to NA
+      oo$strengthArray$importance <- NA
+      if (is.null(o$int.haz.oob)) {
+        o$y <- log(o$int.haz.inbag + eps)
+      }
+      else {
+        o$y <- log(o$int.haz.oob + eps)
+      }
+      o$family <- "regr"
     }
-    if (missing(max.tree)) {
-      max.tree <- o$max.tree
+    ## everything else (usual case)
+    else {
+      if (missing(max.rules.tree)) {
+        max.rules.tree <- o$max.rules.tree
+      }     
+      if (missing(max.tree)) {
+        max.tree <- o$max.tree
+      }
+      ## call varpro strength
+      oo <- get.varpro.strength(object = o,
+                                max.rules.tree = max.rules.tree,
+                                max.tree = max.tree,
+                                membership = TRUE)
     }
-    ## call varpro strength
-    oo <- get.varpro.strength(object = o,
-                      max.rules.tree = max.rules.tree,
-                      max.tree = max.tree,
-                      membership = TRUE)
     ## updated results
     results <- get.varpro.strengthArray(oo$strengthArray, o$family, o$y)
     ## replaces original varpro statistic with locally standardize values 
