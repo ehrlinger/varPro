@@ -112,8 +112,8 @@ Relative risk forests for exercise heart rate recovery as a predictor of mortali
 data(hrrecov)
 vp <- varpro(Surv(ttodead, died)~., hrrecov, ntree=50, split.weight=FALSE) 
 ivp <- ivarpro(vp)
-partial.ivarpro(ivp, "peak_met", "fitness", "peak_hr",
-        col.legend.n = 7, smooth.n = 7, x.dist = "auto")
+plot(ivp, var = "peak_met", col.var = "fitness", size.var = "peak_hr",
+       col.legend.n = 7, smooth.n = 7, x.dist = "auto")
 }
 }
 \keyword{datasets}

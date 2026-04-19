@@ -361,22 +361,23 @@ shap.ivarpro <- function(ivar,
 ## partial plot 
 ##
 ##############################################################
-partial.ivarpro <- function(ivar,
-                            var,
-                            col.var = NULL,
-                            size.var = NULL,
-                            x = NULL,
-                            ladder = FALSE,
-                            ladder.cuts = NULL,
-                            ladder.max.segments = 3000,
-                            pch = 16,
-                            cex = 0.8,
-                            cex.range = c(0.5, 2),
-                            main = NULL,
-                            xlab = NULL,
-                            ylab = "iVarPro gradient",
-                            legend = TRUE,
-                            ...) {
+plot.ivarpro <- function(x,
+      var,
+      col.var = NULL,
+      size.var = NULL,
+      data = NULL,
+      target = NULL,
+      ladder = FALSE,
+      ladder.cuts = NULL,
+      ladder.max.segments = 3000,
+      pch = 16,
+      cex = 0.8,
+      cex.range = c(0.5, 2),
+      main = NULL,
+      xlab = NULL,
+      ylab = "iVarPro gradient",
+      legend = TRUE,
+      ...) {
   ## ------------------------------------------------------------
   ## Extra plotting controls (kept in ... so old calls don't break)
   ##
@@ -440,9 +441,8 @@ partial.ivarpro <- function(ivar,
   ## smooth.n         : alternative to smooth.probs; if set (>=2), uses
   ##                  : seq(0.05, 0.95, length.out = smooth.n)
   ## ------------------------------------------------------------
+  ivar <- x
   dots <- list(...)
-  target <- dots$target
-  dots$target <- NULL
   col.style <- dots$col.style
   if (is.null(col.style)) col.style <- "auto"
   col.style <- match.arg(as.character(col.style),
@@ -668,19 +668,19 @@ partial.ivarpro <- function(ivar,
   ivar_is_list <- is.list(ivar) && !inherits(ivar, "data.frame")
   ## special handling for multivariate / multiclass ivarpro output
   if (ivar_is_list) {
-    if (is.null(x) && !is.null(attr(ivar, "data"))) {
-      x <- attr(ivar, "data")
+    if (is.null(data) && !is.null(attr(ivar, "data"))) {
+      data <- attr(ivar, "data")
     }
-    ivar <- .ivarpro_select_target(ivar, target = target, warn = TRUE, caller = "partial.ivarpro")
+    ivar <- .ivarpro_select_target(ivar, target = target, warn = TRUE, caller = "plot.ivarpro")
   } else {
     ivar_full <- NULL
   }
   ## resolve feature matrix: also add y if possible
-  if (is.null(x) && !is.null(attr(ivar, "data"))) {
-    x  <- attr(ivar, "data")
+  if (is.null(data) && !is.null(attr(ivar, "data"))) {
+    data <- attr(ivar, "data")
   }
-  if (is.null(x)) {
-    stop("need to supply x from the original varpro call")
+  if (is.null(data)) {
+    stop("need to supply data from the original varpro call")
   }
   ## variable name
   if (is.character(var)) {
@@ -691,10 +691,10 @@ partial.ivarpro <- function(ivar,
   if (is.null(var_name) || !(var_name %in% colnames(ivar))) {
     stop("Could not resolve 'var' in ivar columns.")
   }
-  if (!(var_name %in% colnames(x))) {
-    stop("Plotting requires that 'x' contains the plotted variable.")
+  if (!(var_name %in% colnames(data))) {
+    stop("Plotting requires that 'data' contains the plotted variable.")
   }
-  xv <- x[, var_name]
+  xv <- data[, var_name]
   yv <- ivar[[var_name]]
   ## check if requested var has all missing values
   if (all(is.na(yv))) {
@@ -720,8 +720,8 @@ partial.ivarpro <- function(ivar,
   col_legend <- NULL
   cv <- NULL
   if (!is.null(col.var)) {
-    if (!(col.var %in% colnames(x))) stop("col.var not found in x.")
-    cv <- x[, col.var]
+    if (!(col.var %in% colnames(data))) stop("col.var not found in data.")
+    cv <- data[, col.var]
     ## If col.var is numeric but has only a few distinct values, it's usually
     ## more readable to treat it as categorical (factor-like) rather than
     ## forcing a continuous colour gradient.
@@ -762,8 +762,8 @@ partial.ivarpro <- function(ivar,
   ## sizes
   cex_pt <- rep(cex, length(yv))
   if (!is.null(size.var)) {
-    if (!(size.var %in% colnames(x))) stop("size.var not found in x.")
-    sv <- x[, size.var]
+    if (!(size.var %in% colnames(data))) stop("size.var not found in data.")
+    sv <- data[, size.var]
     if (!is.numeric(sv)) sv <- as.numeric(sv)
     rng <- range(sv, na.rm = TRUE)
     if (is.finite(rng[1]) && is.finite(rng[2]) && rng[2] > rng[1]) {

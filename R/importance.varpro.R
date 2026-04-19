@@ -9,7 +9,8 @@
 ###    
 ###
 ####################################################################
-importance.varpro <- function(o, local.std = TRUE, y.external = NULL,
+importance <- function(x, ...) UseMethod("importance")
+importance.varpro <- function(x, local.std = TRUE, y.external = NULL,
                               cutoff = 0.79, trim = 0.1,
                               plot.it = FALSE, conf = TRUE, sort = TRUE,
                               ylab = if (conf) "Importance" else "Standardized Importance",
@@ -21,6 +22,8 @@ importance.varpro <- function(o, local.std = TRUE, y.external = NULL,
   ## coherence of incoming object 
   ##
   ## ------------------------------------------------------------------------
+  o <- x
+  ## coherence of object
   if (!(inherits(o, "varpro") || inherits(o, "uvarpro") || inherits(o, "rhf"))) {
     stop("this function only works for varpro, uvarpro, or rhf objects")
   }
@@ -131,7 +134,7 @@ importance.varpro <- function(o, local.std = TRUE, y.external = NULL,
   ##
   ## ------------------------------------------------------------------------
   if (o$family != "regr+") {
-    importance.varpro.workhorse(o = o,
+    .importance.varpro.workhorse(o = o,
                                 cutoff = cutoff,
                                 trim = trim,
                                 plot.it = plot.it,
@@ -149,7 +152,7 @@ importance.varpro <- function(o, local.std = TRUE, y.external = NULL,
   else {
     lapply(1:ncol(o$y), function(j) {
       o$results <- o$results[, c((1:4), 4+j)]
-      importance.varpro.workhorse(o = o,
+      .importance.varpro.workhorse(o = o,
                                   cutoff = cutoff,
                                   trim = trim,
                                   plot.it = FALSE,
@@ -159,8 +162,109 @@ importance.varpro <- function(o, local.std = TRUE, y.external = NULL,
     })
   }
 }
-importance <- importance.varpro 
-importance.varpro.workhorse <- function(o, cutoff, trim, plot.it, conf, sort,
+##################################################################
+### 
+### 
+### 
+###  S3 importance functions
+###
+###    
+###
+####################################################################
+importance.varpro.workhorse <- function(x, ...) {
+  args <- list(...)
+  if (!missing(x) && !is.null(args$o)) {
+    stop("supply only one of 'x' or 'o'")
+  }
+  if (missing(x)) {
+    if (is.null(args$o)) {
+      stop("argument 'x' is missing, with no default")
+    }
+    x <- args$o
+    args$o <- NULL
+  }
+  do.call(.importance.varpro.workhorse,
+          c(list(o = x), args))
+}
+importance.uvarpro <- function(x,
+                               local.std = FALSE,
+                               y.external = NULL,
+                               cutoff = 0.79,
+                               trim = 0.1,
+                               plot.it = FALSE,
+                               conf = TRUE,
+                               sort = TRUE,
+                               ylab = if (conf) "Importance" else "Standardized Importance",
+                               max.rules.tree,
+                               max.tree,
+                               ...) {
+  args <- c(
+    list(
+      x = x,
+      local.std = FALSE,
+      y.external = NULL,
+      cutoff = cutoff,
+      trim = trim,
+      plot.it = plot.it,
+      conf = conf,
+      sort = sort,
+      ylab = ylab
+    ),
+    list(...)
+  )
+  if (!missing(max.rules.tree)) {
+    args$max.rules.tree <- max.rules.tree
+  }
+  if (!missing(max.tree)) {
+    args$max.tree <- max.tree
+  }
+  do.call(importance.varpro, args)
+}
+importance.rhf <- function(x,
+                           local.std = TRUE,
+                           y.external = NULL,
+                           cutoff = 0.79,
+                           trim = 0.1,
+                           plot.it = FALSE,
+                           conf = TRUE,
+                           sort = TRUE,
+                           ylab = if (conf) "Importance" else "Standardized Importance",
+                           max.rules.tree,
+                           max.tree,
+                           ...) {
+  args <- c(
+    list(
+      x = x,
+      local.std = local.std,
+      y.external = y.external,
+      cutoff = cutoff,
+      trim = trim,
+      plot.it = plot.it,
+      conf = conf,
+      sort = sort,
+      ylab = ylab
+    ),
+    list(...)
+  )
+  if (!missing(max.rules.tree)) {
+    args$max.rules.tree <- max.rules.tree
+  }
+  if (!missing(max.tree)) {
+    args$max.tree <- max.tree
+  }
+  do.call(importance.varpro, args)
+}
+##################################################################
+### 
+### 
+### 
+###  Workhorse
+###  - additionally exported for RHF (time-varying importance)
+###
+###    
+###
+####################################################################
+.importance.varpro.workhorse <- function(o, cutoff, trim, plot.it, conf, sort,
               ylab, local.std, ...) {
   ## ------------------------------------------------------------------------
   ##

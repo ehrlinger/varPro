@@ -1,3 +1,30 @@
+# varPro 3.1.0
+
+## Breaking changes
+
+- `importance()` is now a true S3 generic rather than an alias-style front end.
+- `partial.ivarpro()` has been replaced by `plot.ivarpro()`.
+- The supported user-facing interfaces for fitted objects are now the corresponding S3 generics, such as `importance()`, `predict()`, and `plot()`.
+
+## S3 interface cleanup
+
+- Registered `importance()` methods for `"varpro"` and `"uvarpro"` objects.
+- Registered `plot()` methods for `"ivarpro"` and `"partialpro"` objects.
+- Continued support for class-specific `predict()` methods through standard S3 dispatch for `"varpro"`, `"uvarpro"`, `"ivarpro"`, and `"isopro"` objects.
+
+## Documentation
+
+- Help topics retain dotted method names such as `plot.ivarpro`, `plot.partialpro`, `predict.ivarpro`, `predict.varpro`, `predict.uvarpro`, and `predict.isopro` so that method pages remain easy to find in the reference manual and via `?topic`.
+- Usage sections were updated to show S3 method signatures consistently, for example `\method{plot}{ivarpro}(x, ...)` and `\method{predict}{ivarpro}(object, ...)`.
+- Examples were updated to use the generic forms `plot(x, ...)`, `predict(object, ...)`, and `importance(object)`.
+- The iVarPro plotting documentation now uses `data` for the original feature matrix and documents `target` explicitly for multivariate and multiclass outputs.
+
+## Migration notes
+
+- Replace calls of the form `partial.ivarpro(iv, var = ...)` with `plot(iv, var = ...)`.
+- Prefer `importance(fit)` over direct calls to `importance.varpro(fit)`.
+- Prefer `predict(fit, ...)` over direct calls to `predict.class(fit, ...)`.
+
 # varPro 3.0.0
 
 ## Improvements

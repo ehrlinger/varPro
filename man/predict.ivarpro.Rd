@@ -11,13 +11,13 @@
 }
 
 \usage{
-predict.ivarpro(object,
-              newdata = NULL,
-              model = NULL,
-              noise.na = NULL,
-              path.store.membership = FALSE,
-              save.data = TRUE,
-              ...)
+\method{predict}{ivarpro}(object,
+  newdata = NULL,
+  model = NULL,
+  noise.na = NULL,
+  path.store.membership = FALSE,
+  save.data = TRUE,
+  ...)
 }
 
 \arguments{
@@ -49,14 +49,14 @@ predict.ivarpro(object,
   \item{path.store.membership}{Logical. If \code{TRUE}, store the rule
     membership indices (case IDs) for the prediction in \code{attr(out,
     "ivarpro.path")$oobMembership}. This enables ladder-based bands in
-    \code{\link{partial.ivarpro}} and summaries via
+    \code{\link{plot.ivarpro}} and summaries via
     \code{ivarpro_band()} for the predicted gradients, at the cost of
     additional memory. Default is \code{FALSE}.}
 
   \item{save.data}{Logical. If \code{TRUE} (default) and \code{newdata}
     is supplied, save the predictor data used for prediction as
     \code{attr(out, "data")}, enabling downstream plotting functions
-    (e.g., \code{\link{partial.ivarpro}}) to retrieve \code{x}
+    (e.g., \code{\link{plot.ivarpro}}) to retrieve \code{data}
     automatically.}
 
   \item{...}{Additional arguments passed to
@@ -77,7 +77,7 @@ tree. Case-specific gradients are then computed by aggregating the
 stored rule-level gradients over all rules that apply to the case and
 release the corresponding variable.
 
-When \code{newdata} is not supplied, \code{predict.ivarpro()} attempts
+When \code{newdata} is not supplied, \code{predict()} attempts
 to return OOB case-specific gradients for the original training
 data. When the iVarPro object was created with membership information
 stored in its path (\code{path.store.membership = TRUE}, the default for
@@ -85,8 +85,8 @@ stored in its path (\code{path.store.membership = TRUE}, the default for
 iVarPro matrix.
 
 If \code{save.data = TRUE} and \code{newdata} is supplied,
-\code{attr(out,"data")} contains the predictor matrix used for
-prediction, so downstream wrappers such as \code{\link{partial.ivarpro}}
+\code{attr(out, "data")} contains the predictor matrix used for
+prediction, so downstream wrappers such as \code{\link{plot.ivarpro}}
 can be used directly. If you want ladder bands on predicted gradients,
 set \code{path.store.membership = TRUE} when predicting.
 
@@ -115,7 +115,7 @@ indices.
 
 \seealso{
   \code{\link{ivarpro}},
-  \code{\link{partial.ivarpro}},
+  \code{\link{plot.ivarpro}},
   \code{\link{varpro}}
 }
 
@@ -135,12 +135,13 @@ vp  <- varpro(Surv(ttodead, died) ~ ., peakVO2, ntree = 50)
 imp <- ivarpro(vp)
 
 ## Restore prediction: should match the original iVarPro matrix
-p.restore <- predict.ivarpro(imp)
+p.restore <- predict(imp)
 all.equal(p.restore, imp, check.attributes = FALSE)
 
-## Downstream wrapper: partial plot using the restored gradients
-partial.ivarpro(p.restore, var = "peak.vo2",
-    col.var = "interval", size.var = "y", x = attr(imp, "data"))
+## Downstream plotting using the restored gradients
+plot(p.restore, var = "peak.vo2",
+     col.var = "interval", size.var = "y",
+     data = attr(imp, "data"))
 
 
 ## ------------------------------------------------------------
@@ -168,10 +169,10 @@ if (requireNamespace("mlbench", quietly = TRUE)) {
   colnames(test) <- paste0("x", 1:ncol(te$x))
 
   ## predicted gradients on test data
-  p.test <- predict.ivarpro(imp, newdata = test)
+  p.test <- predict(imp, newdata = test)
 
   ## partial plot directly on predicted object
-  partial.ivarpro(p.test, var = "x1", col.var = "x2")
+  plot(p.test, var = "x1", col.var = "x2")
 
 
   ## push x1 outside the original Friedman support [0, 1]
@@ -179,12 +180,12 @@ if (requireNamespace("mlbench", quietly = TRUE)) {
   test.ood <- test
   test.ood$x1 <- runif(nrow(test), min = -0.5, max = 1.5)
 
-  ## predicted gradients on test data
-  p.test.ood <- predict.ivarpro(imp, newdata = test.ood)
+  ## predicted gradients on OOD test data
+  p.test.ood <- predict(imp, newdata = test.ood)
 
   ## partial plot showing support for x1
-  partial.ivarpro(p.test.ood, var = "x1", col.var = "x2",
-             x.dist = c("density", "rug"))
+  plot(p.test.ood, var = "x1", col.var = "x2",
+       x.dist = c("density", "rug"))
   ## reference lines for the original training support of x1
   abline(v = c(0, 1), lty = 2)
 

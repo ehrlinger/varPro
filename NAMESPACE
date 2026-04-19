@@ -48,20 +48,14 @@ export(
   get.varpro.strengthArray,
   get.vimp,
   importance,
-  importance.varpro,
-  importance.varpro.workhorse,
+  importance.rhf,##used by RHF
+  importance.varpro.workhorse,##used by RHF
   isopro,
   ivarpro,
   local.importance,
   outpro,
   outpro.null,
-  predict.isopro,
-  predict.ivarpro,
-  predict.uvarpro,
-  predict.varpro,
   partialpro,
-  partial.ivarpro,
-  plot.partialpro,
   rf.learner,
   roughfix,
   sdependent,
@@ -72,7 +66,15 @@ export(
   varpro.strength)
 
 
+
+S3method(importance, rhf)
+S3method(importance, uvarpro)
+S3method(importance, varpro)
+S3method(importance, varpro.workhorse)
+
+
 S3method(plot, partialpro)
+S3method(plot, ivarpro)
 
 
 S3method(predict, isopro)
@@ -82,5 +84,3 @@ S3method(predict, varpro)
 
 S3method(print, cv.varpro)
 S3method(print, ivarpro)
-
-

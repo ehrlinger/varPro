@@ -111,7 +111,7 @@ ivarpro(object,
   case IDs) in the returned object for later ladder/band calculations?
   Setting \code{FALSE} can substantially reduce memory usage when the
   number of rules is large, but disables ladder-based bands in
-  \code{partial.ivarpro()} and prevents \code{ivarpro_band()} from being
+  \code{plot.ivarpro()} and prevents \code{ivarpro_band()} from being
   used. Default is \code{TRUE}.}
 
   \item{save.data}{Save the x and y data (default is \code{TRUE})?  Used
@@ -277,7 +277,7 @@ diagnostics.
 
 \seealso{
   \code{\link{varpro}}
-  \code{\link{partial.ivarpro}}
+  \code{\link{plot.ivarpro}}
 }
 
 \examples{
@@ -307,7 +307,7 @@ shap.ivarpro(imp3)
 
 ## ------------------------------------------------------------
 ##
-## synthetic regression example with partial plot
+## synthetic regression example with plot
 ##
 ## ------------------------------------------------------------
 
@@ -354,21 +354,21 @@ imp.global <- ivarpro(vp, scale = "global")
 imp.none <- ivarpro(vp, scale = "none")
 
 
-## partial plot of x2 
-partial.ivarpro(imp, var="x2")
+## plot of x2 
+plot(imp, var="x2")
 
-## partial plot of x2 without ladder band
-partial.ivarpro(imp, var="x2", ladder=FALSE)
+## plot of x2 without ladder band
+plot(imp, var="x2", ladder=FALSE)
 
 ## optional: use only a subset of ladder cuts
-partial.ivarpro(imp, var="x2", ladder=TRUE, ladder.cuts=1:8)
+plot(imp, var="x2", ladder=TRUE, ladder.cuts=1:8)
 
-## partial plot with color/size using x1 (color) and y (size)
-partial.ivarpro(imp, var="x2", col.var="x1", size.var="y")
+## plot with color/size using x1 (color) and y (size)
+plot(imp, var="x2", col.var="x1", size.var="y")
 
 ## ------------------------------------------------------------
 ##
-## survival example with partial plot
+## survival example with plot
 ##
 ## ------------------------------------------------------------
 
@@ -378,13 +378,13 @@ data(peakVO2, package = "randomForestSRC")
 vp <- varpro(Surv(ttodead, died)~., peakVO2)
 ivp <- ivarpro(vp, adaptive = FALSE, cut.max = 2)
 
-## partial plot of peak vo2
+## plot of peak vo2
 ## color displays interval (a measure of exercise time)
 ## size displays "y" which is predicted mortality in survival
-partial.ivarpro(ivp, var="peak.vo2", col.var="interval", size.var="y")
+plot(ivp, var="peak.vo2", col.var="interval", size.var="y")
 
 ## same but using beta blockers for color
-partial.ivarpro(ivp, var="peak.vo2", col.var="betablok", size.var="y")
+plot(ivp, var="peak.vo2", col.var="betablok", size.var="y")
 
 }}
 
